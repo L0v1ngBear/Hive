@@ -1,104 +1,123 @@
-<!-- pages/inventory/inventory.wxml -->
-<scroll-view class="scroll-container" scroll-y="true">
+<scroll-view class="scroll-container" scroll-y>
   <view class="container">
-    <!-- 顶部自定义导航栏 -->
+
+    <!-- 顶部导航 -->
     <view class="top-nav">
-      <view class="nav-back" bindtap="handleBack" hover-class="nav-back-hover">
-        <image class="back-icon" src="/images/back.png" mode="widthFix" lazy-load="true"></image>
+      <view class="nav-back" bindtap="handleBack">
+        <image class="back-icon" src="/images/back.png"></image>
       </view>
-      <text class="nav-title">库存管理</text>
-      <view class="nav-scan" bindtap="handleScanCode" hover-class="nav-scan-hover">
-        <image class="scan-icon" src="/images/scan.png" mode="widthFix" lazy-load="true"></image>
+      <text class="nav-title">布匹库存管理</text>
+      <view class="nav-scan" bindtap="handleScanCode">
+        <image class="scan-icon" src="/images/scan.png"></image>
       </view>
     </view>
 
-    <!-- 库存概览卡片 -->
+    <!-- 库存概览 -->
     <view class="inventory-overview">
       <view class="overview-title">库存概览</view>
       <view class="overview-stats">
         <view class="stat-item">
-          <text class="stat-label">总库存数</text>
-          <text class="stat-value">{{totalCount}}</text>
+          <text class="stat-label">总匹数</text>
+          <text class="stat-value">{{totalRollCount}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">总米数</text>
+          <text class="stat-value">{{totalMeters}}</text>
         </view>
         <view class="stat-item">
           <text class="stat-label">今日入库</text>
-          <text class="stat-value in-stock">{{todayInCount}}</text>
+          <text class="stat-value in-stock">{{todayInMeters}}</text>
         </view>
         <view class="stat-item">
           <text class="stat-label">今日出库</text>
-          <text class="stat-value out-stock">{{todayOutCount}}</text>
+          <text class="stat-value out-stock">{{todayOutMeters}}</text>
         </view>
       </view>
     </view>
 
-    <!-- 快捷操作区 -->
+    <!-- 快捷操作：只保留一个 → 扫码出入库 -->
     <view class="quick-actions">
-      <view class="action-item" bindtap="handleInStock" hover-class="action-item-hover">
-        <image class="action-icon" src="/images/in_stock.png" mode="widthFix" lazy-load="true"></image>
-        <text class="action-text">扫码入库</text>
+      <view class="action-item" bindtap="handleScanCode">
+        <image class="action-icon" src="/images/scan_all.png"></image>
+        <text class="action-text">扫码出入库</text>
       </view>
-      <view class="action-item" bindtap="handleOutStock" hover-class="action-item-hover">
-        <image class="action-icon" src="/images/out_stock.png" mode="widthFix" lazy-load="true"></image>
-        <text class="action-text">扫码出库</text>
-      </view>
-      <view class="action-item" bindtap="handleStockCheck" hover-class="action-item-hover">
-        <image class="action-icon" src="/images/check.png" mode="widthFix" lazy-load="true"></image>
-        <text class="action-text">库存盘点</text>
+      <view class="action-item" bindtap="handleStockCheck">
+        <image class="action-icon" src="/images/check.png"></image>
+        <text class="action-text">布匹盘点</text>
       </view>
     </view>
 
     <!-- 最近操作记录 -->
     <view class="record-section">
       <view class="section-title">
-        <text>最近操作记录</text>
-        <text class="record-more" bindtap="handleShowAllRecord" hover-class="record-more-hover">查看全部 ></text>
+        <text>最近操作</text>
+        <text bindtap="handleShowAllRecord">查看全部</text>
       </view>
-      
+
       <view class="record-list">
-        <!-- 记录列表头部 -->
         <view class="record-header">
           <text class="header-col time-col">时间</text>
-          <text class="header-col type-col">操作类型</text>
-          <text class="header-col goods-col">商品名称</text>
-          <text class="header-col count-col">数量</text>
-          <text class="header-col status-col">状态</text>
+          <text class="header-col type-col">类型</text>
+          <text class="header-col model-col">型号</text>
+          <text class="header-col meter-col">米数</text>
         </view>
-        
-        <!-- 记录列表内容 -->
+
         <block wx:for="{{recordList}}" wx:key="id">
           <view class="record-item">
             <text class="record-col time-col">{{item.time}}</text>
             <text class="record-col type-col {{item.type === 'in' ? 'type-in' : 'type-out'}}">
               {{item.type === 'in' ? '入库' : '出库'}}
             </text>
-            <text class="record-col goods-col">{{item.goodsName}}</text>
-            <text class="record-col count-col">{{item.count}}</text>
-            <text class="record-col status-col {{item.status === 'success' ? 'status-success' : 'status-fail'}}">
-              {{item.status === 'success' ? '成功' : '失败'}}
-            </text>
+            <text class="record-col model-col">{{item.model}}</text>
+            <text class="record-col meter-col">{{item.meters}}m</text>
           </view>
         </block>
-        
-        <!-- 空记录提示 -->
-        <view wx:if="{{recordList.length === 0}}" class="empty-record">
-          <text>暂无操作记录</text>
-        </view>
       </view>
     </view>
   </view>
 </scroll-view>
 
-<!-- 扫码结果弹窗 -->
-<view class="modal-mask" wx:if="{{showScanModal}}" bindtap="hideScanModal">
+<!-- ===================== 核心弹窗：布匹信息 ===================== -->
+<view class="modal-mask" wx:if="{{showClothModal}}" bindtap="hideClothModal">
   <view class="modal-content" catchtap="stopPropagation">
-    <view class="modal-title">扫码结果</view>
+    <view class="modal-title">布匹信息</view>
+
+    <view class="info-row">
+      <text>条码：</text>
+      <text>{{barcode}}</text>
+    </view>
+    <view class="info-row">
+      <text>型号：</text>
+      <text>{{clothInfo.model}}</text>
+    </view>
+    <view class="info-row">
+      <text>当前米数：</text>
+      <text>{{clothInfo.meters}} m</text>
+    </view>
+    <view class="info-row" wx:if="{{currentOperType === 'in'}}">
+      <text>入库米数：</text>
+      <input type="digit" bindinput="onMetersInput" placeholder="请输入米数" />
+    </view>
+
+    <view class="oper-btns">
+      <button class="btn in" bindtap="doIn" wx:if="{{!clothInfo.isInStock}}">入库</button>
+      <button class="btn out" bindtap="doOut" wx:if="{{clothInfo.isInStock}}">出库</button>
+    </view>
+  </view>
+</view>
+
+<!-- 打印选择弹窗 -->
+<view class="modal-mask" wx:if="{{showPrintModal}}" bindtap="hidePrintModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-title">选择打印方式</view>
     <view class="modal-info">
-      <text class="info-label">商品编码：</text>
-      <text class="info-value">{{scanResult}}</text>
+      <text class="info-label">条码：</text>
+      <text class="info-value">{{printData.barcode}}</text>
     </view>
-    <view class="modal-actions">
-      <button class="modal-btn cancel-btn" bindtap="hideScanModal">取消</button>
-      <button class="modal-btn confirm-btn" bindtap="confirmScan">确认{{currentOperType === 'in' ? '入库' : '出库'}}</button>
+    <view class="print-type-btns">
+      <button class="print-btn preview-btn" bindtap="choosePrintType" data-type="preview">预览打印</button>
+      <button class="print-btn bluetooth-btn" bindtap="choosePrintType" data-type="bluetooth">打印</button>
     </view>
+    <button class="modal-btn cancel-btn" bindtap="hidePrintModal">取消</button>
   </view>
 </view>

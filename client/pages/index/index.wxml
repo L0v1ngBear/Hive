@@ -28,37 +28,40 @@
     <view class="function-module">
       <view class="module-title" selectable="false">核心功能</view>
       <view class="function-grid">
-        <view class="grid-item" bindtap="handleFunctionTap" data-function-type="attendance" hover-class="grid-item-hover">
+        <!-- 考勤打卡：仅租户启用该功能时显示 -->
+        <view wx:if="{{functionEnable.attendance}}" class="grid-item" bindtap="handleFunctionTap" data-function-type="attendance" hover-class="grid-item-hover">
           <image class="grid-icon" src="/images/attendance.png" mode="widthFix" lazy-load="true"></image>
           <text class="grid-text" selectable="false">考勤打卡</text>
         </view>
-        <view class="grid-item" bindtap="handleFunctionTap" data-function-type="order" hover-class="grid-item-hover">
+        <!-- 订单管理：仅租户启用该功能时显示 -->
+        <view wx:if="{{functionEnable.order}}" class="grid-item" bindtap="handleFunctionTap" data-function-type="order" hover-class="grid-item-hover">
           <image class="grid-icon" src="/images/order.png" mode="widthFix" lazy-load="true"></image>
           <text class="grid-text" selectable="false">订单管理</text>
         </view>
-        <view class="grid-item" bindtap="handleFunctionTap" data-function-type="inventory" hover-class="grid-item-hover">
+        <!-- 库存管理：仅租户启用该功能时显示 -->
+        <view wx:if="{{functionEnable.inventory}}" class="grid-item" bindtap="handleFunctionTap" data-function-type="inventory" hover-class="grid-item-hover">
           <image class="grid-icon" src="/images/inventory.png" mode="widthFix" lazy-load="true"></image>
           <text class="grid-text" selectable="false">库存管理</text>
         </view>
-        <!-- 审批流程：请假、报销、加班、入职等各类办公审批申请与处理 -->
-        <view class="grid-item" bindtap="handleFunctionTap" data-function-type="approval" hover-class="grid-item-hover">
+        <!-- 审批流程：仅租户启用该功能时显示 -->
+        <view wx:if="{{functionEnable.approval}}" class="grid-item" bindtap="handleFunctionTap" data-function-type="approval" hover-class="grid-item-hover">
           <image class="grid-icon" src="/images/approval.png" mode="widthFix" lazy-load="true"></image>
           <text class="grid-text" selectable="false">审批流程</text>
         </view>
-        <!-- 企业公告：查看公司官方通知、部门公告、制度更新等信息 -->
-        <view class="grid-item" bindtap="handleFunctionTap" data-function-type="notice" hover-class="grid-item-hover">
+        <!-- 企业公告：仅租户启用该功能时显示 -->
+        <view wx:if="{{functionEnable.notice}}" class="grid-item" bindtap="handleFunctionTap" data-function-type="notice" hover-class="grid-item-hover">
           <image class="grid-icon" src="/images/notice.png" mode="widthFix" lazy-load="true"></image>
           <text class="grid-text" selectable="false">企业公告</text>
         </view> 
-        <view class="grid-item" bindtap="handleFunctionTap" data-function-type="badProduct" hover-class="grid-item-hover">
+        <!-- 次品管理：仅租户启用该功能时显示 -->
+        <view wx:if="{{functionEnable.badProduct}}" class="grid-item" bindtap="handleFunctionTap" data-function-type="badProduct" hover-class="grid-item-hover">
           <image class="grid-icon" src="/images/badproduct.png" mode="widthFix" lazy-load="true"></image>
           <text class="grid-text" selectable="false">次品管理</text>
         </view>
-        <!-- 更多功能：承载低频但必要的办公功能，扩展小程序业务边界 -->
-        <!-- <view class="grid-item" bindtap="handleFunctionTap" data-function-type="more" hover-class="grid-item-hover">
-          <image class="grid-icon" src="/images/more.png" mode="widthFix" lazy-load="true"></image>
-          <text class="grid-text" selectable="false">更多功能</text>
-        </view> -->
+      </view>
+      <!-- 核心功能空状态：所有功能都禁用时显示 -->
+      <view wx:if="{{!hasAnyFunctionEnable}}" class="empty-function">
+        <text selectable="false">暂无可用的核心功能</text>
       </view>
     </view>
 

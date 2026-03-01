@@ -420,3 +420,31 @@ page {
   opacity: 0.9;
   transform: scale(0.98); /* 待办模块添加点击反馈 */
 }
+
+/* 核心功能空状态 */
+.empty-function {
+  padding: 60rpx 0;
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 优化功能网格布局：禁用项隐藏后自动补位 */
+.function-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20rpx;
+  padding: 20rpx;
+}
+
+.grid-item {
+  width: calc(33.333% - 14rpx);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30rpx 0;
+  background-color: #fff;
+  border-radius: 12rpx;
+}

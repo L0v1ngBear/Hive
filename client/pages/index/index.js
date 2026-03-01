@@ -1,4 +1,9 @@
 // pages/index/index.js
+// 引入多租户和功能权限工具类（核心新增）
+const functionAuth = require('../../utils/function-auth.js');
+const tenantUtil = require('../../utils/tenant.js');
+const { request } = require('../../utils/request.js');
+
 Page({
   /**
    * 页面的初始数据
@@ -10,77 +15,164 @@ Page({
     userInfo: {    // 用户信息（可后续也从接口获取）
       name: "张三",
       dept: "技术部 - 前端开发工程师"
-    }
+    },
+    // 新增：功能启用状态映射（与WXML中的功能项对应）
+    functionEnable: {
+      attendance: false,
+      order: false,
+      inventory: false,
+      approval: false,
+      notice: false,
+      file: false,
+      contact: false,
+      meeting: false,
+      asset: false,
+      more: false,
+      badProduct: false
+    },
+    // 新增：是否有任意功能启用（用于空状态显示）
+    hasAnyFunctionEnable: false
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    // 页面加载时请求待办数据
+    // 新增：初始化功能权限（优先于数据请求，保证UI渲染正确）
+    this.initFunctionPermission();
+    // 初始化用户信息（关联租户）
+    this.initUserInfo();
+    // 页面加载时请求待办数据（原有逻辑保留，改为调用封装请求）
     this.fetchTodoData();
-    
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 页面重新显示时刷新数据（比如从其他页面返回）
+    // 新增：页面重新显示时刷新功能权限（防止功能开关修改后未刷新）
+    this.initFunctionPermission();
+    // 页面重新显示时刷新数据（比如从其他页面返回）（原有逻辑保留）
     this.fetchTodoData();
   },
 
   /**
-   * 核心：请求待办数据接口
+   * 新增：初始化用户信息（关联租户）
    */
-  fetchTodoData() {
-    wx.showLoading({
-      title: '加载中...',
-    });
-
-    // 替换为你的真实接口地址
-    wx.request({
-      url: 'https://你的接口域名/api/todo/list', 
-      method: 'GET',
-      header: {
-        'content-type': 'application/json',
-        // 如需token认证，取消注释并替换
-        // 'Authorization': 'Bearer ' + wx.getStorageSync('token')
-      },
-      success: (res) => {
-        wx.hideLoading();
-        // 假设接口返回code=200为成功（根据实际接口调整）
-        if (res.data.code === 200) {
-          const { count, list } = res.data.data;
-          // 更新页面数据
-          this.setData({
-            todoCount: count,
-            todoList: list
-          });
-        } else {
-          wx.showToast({
-            title: res.data.msg || '加载失败',
-            icon: 'none'
-          });
+  initUserInfo() {
+    // 获取当前租户信息
+    const tenantInfo = tenantUtil.getTenantInfo();
+    if (tenantInfo && tenantInfo.name) {
+      // 租户信息合并到用户部门，区分不同租户
+      this.setData({
+        userInfo: {
+          ...this.data.userInfo,
+          dept: `${tenantInfo.name} - ${this.data.userInfo.dept}`
         }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        wx.showToast({
-          title: '网络异常，请重试',
-          icon: 'none'
-        });
-        console.error('待办数据请求失败：', err);
-      }
+      });
+    }
+  },
+
+  /**
+   * 新增：初始化功能权限（核心逻辑）
+   */
+  initFunctionPermission() {
+    // 校验每个功能的启用状态（与function-auth.js关联）
+    const functionEnable = {
+      attendance: true,  // 强制显示考勤
+      order: true,       // 强制显示订单
+      inventory: true,   // 强制显示库存
+      approval: true,
+      notice: true,
+      file: false,
+      contact: false,
+      meeting: false,
+      asset: false,
+      more: false,
+      badProduct: true
+      // TODO 接口还没实现
+      // attendance: functionAuth.checkEnable('attendance'),
+      // order: functionAuth.checkEnable('order'),
+      // inventory: functionAuth.checkEnable('inventory'),
+      // approval: functionAuth.checkEnable('approval'),
+      // notice: functionAuth.checkEnable('notice'),
+      // file: functionAuth.checkEnable('file'),
+      // contact: functionAuth.checkEnable('contact'),
+      // meeting: functionAuth.checkEnable('meeting'),
+      // asset: functionAuth.checkEnable('asset'),
+      // more: functionAuth.checkEnable('more'),
+      // badProduct: functionAuth.checkEnable('badProduct')
+      
+    };
+
+    // 判断是否有任意功能启用（用于空状态显示）
+    const hasAnyFunctionEnable = Object.values(functionEnable).some(enable => enable === true);
+
+    // 更新页面数据
+    this.setData({
+      functionEnable,
+      hasAnyFunctionEnable
     });
   },
 
   /**
-   * 核心功能模块点击事件（保留原有逻辑，优化参数名）
+   * 核心：请求待办数据接口（改造：使用封装请求，自动带租户ID）
+   */
+  async fetchTodoData() {
+    // 前置校验：租户ID是否存在
+    const tenantId = tenantUtil.getTenantId();
+    if (!tenantId) {
+      wx.showToast({ title: '请先选择租户', icon: 'none' });
+      return;
+    }
+
+    wx.showLoading({
+      title: '加载中...',
+    });
+
+    try {
+      // 替换原生wx.request为封装的request，自动带租户ID
+      const res = await request({
+        url: 'https://你的接口域名/api/todo/list',
+        method: 'GET',
+        // 无需手动加Tenant-Id，封装方法会自动添加
+        // 如需token认证，可在request.js中统一配置，无需此处写
+        // data: {} // GET请求无需传data，如需传参可加
+      });
+
+      // 接口成功逻辑（res已在封装方法中过滤，仅返回code=200的数据）
+      const { count, list } = res.data;
+      this.setData({
+        todoCount: count,
+        todoList: list
+      });
+    } catch (err) {
+      // 异常已在封装方法中统一提示，此处仅记录日志
+      console.error('待办数据请求失败：', err);
+    } finally {
+      // 无论成功/失败，都隐藏loading
+      wx.hideLoading();
+    }
+  },
+
+  /**
+   * 核心功能模块点击事件（原有逻辑保留，新增权限兜底校验）
    */
   handleFunctionTap(e) {
     // 注意：WXML中是data-function-type，这里要对应
     const type = e.currentTarget.dataset.functionType;
+
+    // 新增：权限兜底校验（防止禁用功能被触发）
+    if (!this.data.functionEnable[type]) {
+      wx.showToast({
+        title: '该功能已禁用，请联系管理员',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    // 原有逻辑保留
     wx.showToast({
       title: `即将进入${this.getFunctionName(type)}`,
       icon: "none",
