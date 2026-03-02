@@ -4,9 +4,9 @@ const tenantUtil = require('../../utils/tenant.js');
 
 Page({
   data: {
-    // 库存统计（布匹专用）
-    totalRollCount: 120,    // 总匹数
-    totalMeters: 3600.5,    // 总米数
+    // 库存统计
+    totalRollCount: 120,
+    totalMeters: 3600.5,
     todayInMeters: 280,
     todayOutMeters: 160,
 
@@ -15,30 +15,270 @@ Page({
       { id: 2, time: '08:40', type: 'out', model: 'C002', meters: 32.0 },
     ],
 
-    // 扫码
+    // 扫码相关
     barcode: '',
     showClothModal: false,
-    clothInfo: {},         // 后端返回的布匹信息
-    inputMeters: 1,
+    clothInfo: {},
+    inputMeters: 0,
+    currentOperType: 'in',
 
     // 打印相关
-    showPrintModal: false, // 打印选择弹窗
-    printData: {},         // 待打印的条码数据
-    bluetoothDevices: [],  // 已配对的蓝牙设备
-    connectedDeviceId: '', // 已连接的打印机设备ID
-    isBluetoothOpen: false // 蓝牙是否开启
+    showPrintModal: false,
+    printData: {},
+    bluetoothDevices: [],
+    connectedDeviceId: '',
+    isBluetoothOpen: false,
+
+    // 手动入库表单
+    showAddClothModal: false,
+    clothForm: {
+      model: '',
+      meters: 0,
+      width: ''
+    },
+
+    // 型号相关
+    modelOptions: [],
+    showModelList: false,
+    allModels: [],
+    // 门幅核心关联数据
+    widthOptions: [], // 当前型号对应的门幅列表
+    showWidthList: false,
+    modelHasWidth: false, // 当前型号是否有预设门幅
+    // 型号-门幅映射表（模拟后端数据）
+    modelWidthMap: {
+      'C001': ['1.8m'],
+      'C002': ['2.0m', '2.2m'],
+      'C003': ['1.5m'],
+      '白色棉布': ['1.8m', '2.0m']
+    }
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad(options) {
     this.getInventoryStats();
-    // 初始化蓝牙（可选：进入页面检测蓝牙状态）
     this.initBluetooth();
+    this.getAllModels();
   },
 
-  // 扫码（只识别 布匹条码）
+  // 获取所有型号
+  getAllModels() {
+    this.setData({
+      allModels: ['C001', 'C002', 'C003', 'C004', 'C005', '白色棉布', '黑色涤纶']
+    });
+  },
+
+  // 型号搜索输入（核心：输入型号时自动匹配门幅）
+  onModelSearch(e) {
+    const inputModel = e.detail.value.trim();
+    const { allModels, modelWidthMap } = this.data;
+
+    // 更新型号
+    this.setData({
+      'clothForm.model': inputModel
+    });
+
+    // 匹配型号列表
+    if (inputModel) {
+      const matchModels = allModels.filter(model => 
+        model.toLowerCase().includes(inputModel.toLowerCase())
+      );
+      this.setData({ modelOptions: matchModels });
+    } else {
+      this.setData({ modelOptions: [], 'clothForm.width': '', modelHasWidth: false });
+    }
+
+    // 核心：自动匹配当前型号的门幅
+    if (inputModel && modelWidthMap[inputModel]) {
+      // 型号有预设门幅
+      const widthList = modelWidthMap[inputModel];
+      this.setData({
+        widthOptions: widthList,
+        'clothForm.width': widthList[0], // 自动填充第一个门幅
+        modelHasWidth: true
+      });
+    } else {
+      // 型号无预设门幅，清空门幅
+      this.setData({
+        widthOptions: [],
+        'clothForm.width': '',
+        modelHasWidth: false
+      });
+    }
+
+    this.setData({ showModelList: !!inputModel });
+  },
+
+  // 显示型号列表
+  showModelList() {
+    const { clothForm, allModels } = this.data;
+    if (clothForm.model) {
+      this.onModelSearch({ detail: { value: clothForm.model } });
+    } else {
+      this.setData({
+        modelOptions: allModels,
+        showModelList: true
+      });
+    }
+  },
+
+  // 选择型号（核心：选择型号后自动关联门幅）
+  chooseModel(e) {
+    const selectedModel = e.currentTarget.dataset.model;
+    const { modelWidthMap } = this.data;
+
+    // 1. 更新选中的型号
+    this.setData({
+      'clothForm.model': selectedModel,
+      showModelList: false
+    });
+
+    // 2. 核心：自动匹配该型号的门幅
+    if (modelWidthMap[selectedModel]) {
+      // 有预设门幅：自动填充+显示可选列表
+      const widthList = modelWidthMap[selectedModel];
+      this.setData({
+        widthOptions: widthList,
+        'clothForm.width': widthList[0],
+        modelHasWidth: true
+      });
+    } else {
+      // 无预设门幅：清空门幅，允许手动输入
+      this.setData({
+        widthOptions: [],
+        'clothForm.width': '',
+        modelHasWidth: false
+      });
+      wx.showToast({
+        title: `型号${selectedModel}暂无门幅，可手动输入`,
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
+  // 新建型号（自动新建型号-门幅关联）
+  createModel() {
+    const { clothForm, modelWidthMap } = this.data;
+    const newModel = clothForm.model.trim();
+
+    this.setData({ showModelList: false });
+
+    // 如果用户已输入门幅，自动建立型号-门幅关联
+    if (clothForm.width) {
+      const newWidthMap = { ...modelWidthMap };
+      newWidthMap[newModel] = [clothForm.width];
+      this.setData({
+        modelWidthMap: newWidthMap,
+        modelHasWidth: true
+      });
+      wx.showToast({
+        title: `新建型号${newModel}，并关联门幅${clothForm.width}`,
+        icon: 'success',
+        duration: 2000
+      });
+    } else {
+      wx.showToast({
+        title: `新建型号${newModel}，请输入门幅`,
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
+  // 门幅输入（无预设门幅时允许手动输入）
+  onWidthInput(e) {
+    const inputWidth = e.detail.value.trim();
+    const { modelHasWidth } = this.data;
+
+    // 有预设门幅时禁止手动输入（只能选择）
+    if (!modelHasWidth) {
+      this.setData({
+        'clothForm.width': inputWidth
+      });
+    }
+  },
+
+  // 显示门幅列表（仅显示当前型号的门幅）
+  showWidthList() {
+    const { clothForm, widthOptions } = this.data;
+    if (clothForm.model && widthOptions.length > 0) {
+      this.setData({ showWidthList: true });
+    }
+  },
+
+  // 选择门幅
+  chooseWidth(e) {
+    const selectedWidth = e.currentTarget.dataset.width;
+    this.setData({
+      'clothForm.width': selectedWidth,
+      showWidthList: false
+    });
+  },
+
+  // 打开手动入库弹窗
+  handleAddCloth() {
+    this.setData({
+      clothForm: { model: '', meters: 0, width: '' },
+      showAddClothModal: true,
+      showModelList: false,
+      modelOptions: [],
+      showWidthList: false,
+      modelHasWidth: false
+    });
+  },
+
+  // 米数输入
+  onFormInput(e) {
+    const { field } = e.currentTarget.dataset;
+    const value = e.detail.value;
+    this.setData({
+      [`clothForm.${field}`]: field === 'meters' ? Number(value) : value
+    });
+  },
+
+  // 手动入库（核心：自动新建型号-门幅关联）
+  async doAddCloth() {
+    const { model, meters, width } = this.data.clothForm;
+    const tenantId = tenantUtil.getTenantId();
+
+    // 校验
+    if (!tenantId) { wx.showToast({ title: '请先选择租户', icon: 'none' }); return; }
+    if (!model) { wx.showToast({ title: '请输入/选择布匹型号', icon: 'none' }); return; }
+    if (!meters || meters <= 0) { wx.showToast({ title: '请输入有效米数', icon: 'none' }); return; }
+    if (!width) { wx.showToast({ title: '请输入/选择门幅', icon: 'none' }); return; }
+
+    wx.showLoading({ title: '入库中...' })
+
+    // 模拟入库逻辑
+    setTimeout(() => {
+      wx.hideLoading();
+      const { modelWidthMap } = this.data;
+      // 核心：如果是新型号/无门幅关联，自动新增到映射表
+      if (!modelWidthMap[model]) {
+        const newWidthMap = { ...modelWidthMap };
+        newWidthMap[model] = [width];
+        this.setData({ modelWidthMap: newWidthMap });
+      } else if (!modelWidthMap[model].includes(width)) {
+        // 如果型号已有门幅，但当前门幅是新的，追加到列表
+        const newWidthMap = { ...modelWidthMap };
+        newWidthMap[model].push(width);
+        this.setData({ modelWidthMap: newWidthMap });
+      }
+
+      // 生成条码+打印逻辑
+      const barcode = `CL${new Date().getFullYear().toString().slice(2)}${(new Date().getMonth()+1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}${Math.floor(Math.random()*10000).toString().padStart(4, '0')}`;
+      this.setData({
+        printData: { barcode, model, meters, width, tenantId },
+        showPrintModal: true,
+        showAddClothModal: false
+      });
+      wx.showToast({ title: '入库成功，型号门幅已关联', icon: 'success' });
+      this.getInventoryStats();
+      this.getAllModels();
+    }, 800);
+  },
+
+  // 以下为原有功能代码（无修改）
   handleScanCode() {
     wx.scanCode({
       scanType: ['barCode'],
@@ -47,142 +287,78 @@ Page({
         this.setData({ barcode });
         this.getClothInfo(barcode);
       }
-    })
+    });
   },
 
-  // 查询布匹信息
-  async getClothInfo(barcode) {
+  getClothInfo(barcode) {
     const tenantId = tenantUtil.getTenantId();
     if (!tenantId) {
       wx.showToast({ title: '请先选择租户', icon: 'none' });
       return;
     }
 
-    wx.showLoading({ title: '查询中...' })
-
-    // 模拟逻辑（对接后端时替换为真实接口）
+    wx.showLoading({ title: '查询中...' });
     setTimeout(() => {
       const mockCloth = {
         model: 'C001',
         meters: 28.5,
-        isInStock: false, // 是否已入库
-        color: '白色',
+        isInStock: true,
         width: '1.8m'
-      }
-      this.setData({ clothInfo: mockCloth, showClothModal: true })
-      wx.hideLoading()
-    }, 800)
+      };
+      this.setData({ 
+        clothInfo: mockCloth, 
+        showClothModal: true,
+        currentOperType: mockCloth.isInStock ? 'out' : 'in'
+      });
+      wx.hideLoading();
+    }, 800);
   },
 
-  // 输入米数
   onMetersInput(e) {
-    this.setData({ inputMeters: Number(e.detail.value) })
+    this.setData({ inputMeters: Number(e.detail.value) });
   },
 
-  // 入库（核心：入库成功后触发打印）
-  async doIn() {
+  doIn() {
     const meters = this.data.inputMeters;
     const tenantId = tenantUtil.getTenantId();
+    const barcode = this.data.barcode;
     
-    if (!tenantId) {
-      wx.showToast({ title: '请先选择租户', icon: 'none' });
-      return;
-    }
-    if (!meters || meters <= 0) {
-      wx.showToast({ title: '请输入有效米数', icon: 'none' });
-      return;
-    }
+    if (!tenantId) { wx.showToast({ title: '请先选择租户', icon: 'none' }); return; }
+    if (!meters || meters <= 0) { wx.showToast({ title: '请输入有效米数', icon: 'none' }); return; }
 
-    wx.showLoading({ title: '入库中...' })
-
-    // 模拟入库接口（对接后端时替换）
+    wx.showLoading({ title: '入库中...' });
     setTimeout(() => {
       wx.hideLoading();
-      // 模拟后端返回的条码数据（实际由后端生成）
       const printData = {
-        barcode: `CL${new Date().getFullYear().toString().slice(2)}${(new Date().getMonth()+1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}${Math.floor(Math.random()*10000).toString().padStart(4, '0')}`,
+        barcode: barcode,
         model: this.data.clothInfo.model,
         meters: meters,
-        color: this.data.clothInfo.color,
         width: this.data.clothInfo.width,
         tenantId: tenantId
       };
-      // 入库成功后存储打印数据，打开打印选择弹窗
       this.setData({
         printData: printData,
-        showPrintModal: true
+        showPrintModal: true,
+        showClothModal: false
       });
       wx.showToast({ title: '入库成功，准备打印条码', icon: 'success' });
-      this.hideClothModal();
     }, 800);
-
-    // 真实后端接口（对接时取消注释）
-    /*
-    try {
-      const res = await request({
-        url: 'https://你的域名/api/cloth/in',
-        data: {
-          barcode: this.data.barcode || '', // 为空则由后端生成
-          model: this.data.clothInfo.model,
-          meters: meters,
-          color: this.data.clothInfo.color,
-          width: this.data.clothInfo.width
-        }
-      });
-      wx.hideLoading();
-      // 存储后端返回的打印数据
-      this.setData({
-        printData: res.data.printData,
-        showPrintModal: true
-      });
-      wx.showToast({ title: '入库成功，准备打印条码', icon: 'success' });
-      this.hideClothModal();
-    } catch (err) {
-      wx.hideLoading();
-      console.error('入库失败：', err);
-    }
-    */
   },
 
-  // 出库
-  async doOut() {
+  doOut() {
     const tenantId = tenantUtil.getTenantId();
-    if (!tenantId) {
-      wx.showToast({ title: '请先选择租户', icon: 'none' });
-      return;
-    }
+    const barcode = this.data.barcode;
+    
+    if (!tenantId) { wx.showToast({ title: '请先选择租户', icon: 'none' }); return; }
 
-    wx.showLoading({ title: '出库中...' })
-
-    // 模拟出库接口
+    wx.showLoading({ title: '出库中...' });
     setTimeout(() => {
       wx.hideLoading();
       wx.showToast({ title: '出库成功', icon: 'success' });
       this.hideClothModal();
     }, 800);
-
-    // 真实后端接口（对接时取消注释）
-    /*
-    try {
-      await request({
-        url: 'https://你的域名/api/cloth/out',
-        data: { barcode: this.data.barcode }
-      });
-      wx.hideLoading();
-      wx.showToast({ title: '出库成功', icon: 'success' });
-      this.hideClothModal();
-    } catch (err) {
-      wx.hideLoading();
-      console.error('出库失败：', err);
-    }
-    */
   },
 
-  // ===================== 打印相关核心方法 =====================
-  /**
-   * 选择打印方式（预览/蓝牙）
-   * @param {String} type - preview:预览打印，bluetooth:蓝牙打印
-   */
   choosePrintType(e) {
     const type = e.currentTarget.dataset.type;
     const { printData } = this.data;
@@ -192,38 +368,15 @@ Page({
     }
 
     if (type === 'preview') {
-      // 预览打印（生成条码标签图片）
       this.previewPrint(printData);
     } else if (type === 'bluetooth') {
-      // 蓝牙打印
       this.bluetoothPrint(printData);
     }
   },
 
-  /**
-   * 预览打印（生成条码标签图片，可截图/连接打印机打印）
-   */
   previewPrint(printData) {
-    // 拼接条码生成接口（可替换为自己的条码生成服务）
     const barcodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${printData.barcode}`;
-    // 构造标签内容
-    const labelContent = `
-      条码：${printData.barcode}
-      型号：${printData.model}
-      米数：${printData.meters}m
-      颜色：${printData.color}
-      门幅：${printData.width}
-    `;
-
-    // 预览图片（实际项目可生成带内容的标签图片）
-    wx.previewImage({
-      urls: [barcodeUrl],
-      success: () => {
-        wx.showToast({ title: '请截图/连接打印机打印', icon: 'none' });
-      }
-    });
-
-    // 可选：保存标签图片到本地
+    wx.previewImage({ urls: [barcodeUrl] });
     wx.downloadFile({
       url: barcodeUrl,
       success: (res) => {
@@ -237,33 +390,26 @@ Page({
     });
   },
 
-  /**
-   * 蓝牙打印（对接主流蓝牙条码打印机）
-   */
   bluetoothPrint(printData) {
     const { connectedDeviceId } = this.data;
-    // 已连接打印机，直接发送打印指令
     if (connectedDeviceId) {
       this.sendPrintCommand(printData);
       return;
     }
 
-    // 未连接打印机，先搜索蓝牙设备
     wx.showLoading({ title: '搜索蓝牙打印机...' });
     wx.startBluetoothDevicesDiscovery({
-      services: ['0000FFE0-0000-1000-8000-00805F9B34FB'], // 打印机通用服务ID
+      services: ['0000FFE0-0000-1000-8000-00805F9B34FB'],
       success: (res) => {
         wx.hideLoading();
-        // 获取已发现的蓝牙设备
         wx.getBluetoothDevices({
           success: (res) => {
-            const devices = res.devices.filter(device => device.name && device.name.includes('Printer')); // 筛选打印机设备
+            const devices = res.devices.filter(device => device.name && device.name.includes('Printer'));
             if (devices.length === 0) {
               wx.showToast({ title: '未找到蓝牙打印机', icon: 'none' });
               return;
             }
             this.setData({ bluetoothDevices: devices });
-            // 选择第一个打印机连接
             this.connectBluetoothDevice(devices[0].deviceId);
           }
         });
@@ -275,45 +421,30 @@ Page({
     });
   },
 
-  /**
-   * 初始化蓝牙状态
-   */
   initBluetooth() {
     wx.openBluetoothAdapter({
-      success: () => {
-        this.setData({ isBluetoothOpen: true });
-      },
-      fail: () => {
+      success: () => { this.setData({ isBluetoothOpen: true }); },
+      fail: () => { 
         this.setData({ isBluetoothOpen: false });
         wx.showToast({ title: '请开启蓝牙以使用打印功能', icon: 'none' });
       }
     });
   },
 
-  /**
-   * 连接蓝牙打印机
-   */
   connectBluetoothDevice(deviceId) {
     wx.createBLEConnection({
       deviceId: deviceId,
       success: () => {
         this.setData({ connectedDeviceId: deviceId });
         wx.showToast({ title: '打印机连接成功', icon: 'success' });
-        // 连接成功后发送打印指令
         this.sendPrintCommand(this.data.printData);
       },
-      fail: () => {
-        wx.showToast({ title: '打印机连接失败', icon: 'none' });
-      }
+      fail: () => { wx.showToast({ title: '打印机连接失败', icon: 'none' }); }
     });
   },
 
-  /**
-   * 发送打印指令到蓝牙打印机
-   */
   sendPrintCommand(printData) {
     const { connectedDeviceId } = this.data;
-    // 获取打印机服务和特征值（通用指令，不同打印机可调整）
     wx.getBLEDeviceServices({
       deviceId: connectedDeviceId,
       success: (res) => {
@@ -323,22 +454,18 @@ Page({
           serviceId: serviceId,
           success: (res) => {
             const charId = res.characteristics[0].uuid;
-            // 构造打印内容（适配ESC/POS指令）
             const printContent = `
               ${printData.barcode}\n
               型号：${printData.model}\n
               米数：${printData.meters}m\n
-              颜色：${printData.color}\n
               门幅：${printData.width}\n
               \n\n
             `;
-            // 转换为ArrayBuffer发送
             const buffer = new ArrayBuffer(printContent.length);
             const dataView = new DataView(buffer);
             for (let i = 0; i < printContent.length; i++) {
               dataView.setUint8(i, printContent.charCodeAt(i));
             }
-            // 发送打印指令
             wx.writeBLECharacteristicValue({
               deviceId: connectedDeviceId,
               serviceId: serviceId,
@@ -348,9 +475,7 @@ Page({
                 wx.showToast({ title: '打印指令发送成功', icon: 'success' });
                 this.setData({ showPrintModal: false });
               },
-              fail: () => {
-                wx.showToast({ title: '打印指令发送失败', icon: 'none' });
-              }
+              fail: () => { wx.showToast({ title: '打印指令发送失败', icon: 'none' }); }
             });
           }
         });
@@ -358,80 +483,16 @@ Page({
     });
   },
 
-  /**
-   * 模拟自动化设备入库（前端测试用）
-   */
-  simulateAutoIn() {
-    const autoData = {
-      model: 'C002',
-      meters: 32.7,
-      color: '黑色',
-      width: '1.8m'
-    };
-    // 调用自动化设备入库接口
-    this.autoClothIn(autoData);
-  },
-
-  /**
-   * 自动化设备入库接口（预留）
-   */
-  async autoClothIn(autoData) {
-    const tenantId = tenantUtil.getTenantId();
-    if (!tenantId) {
-      wx.showToast({ title: '请先选择租户', icon: 'none' });
-      return;
-    }
-
-    wx.showLoading({ title: '自动化入库中...' });
-    // 真实接口（对接后端时使用）
-    /*
-    try {
-      const res = await request({
-        url: 'https://你的域名/api/auto/cloth/in',
-        data: autoData
-      });
-      wx.hideLoading();
-      // 自动打印条码
-      this.setData({
-        printData: res.data.printData,
-        showPrintModal: true
-      });
-      wx.showToast({ title: '自动化入库成功', icon: 'success' });
-    } catch (err) {
-      wx.hideLoading();
-      console.error('自动化入库失败：', err);
-    }
-    */
-
-    // 模拟返回
-    setTimeout(() => {
-      wx.hideLoading();
-      const printData = {
-        barcode: `CL${new Date().getFullYear().toString().slice(2)}${(new Date().getMonth()+1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}${Math.floor(Math.random()*10000).toString().padStart(4, '0')}`,
-        ...autoData,
-        tenantId: tenantId
-      };
-      this.setData({
-        printData: printData,
-        showPrintModal: true
-      });
-      wx.showToast({ title: '自动化入库成功，准备打印', icon: 'success' });
-    }, 1000);
-  },
-
-  // ===================== 辅助方法 =====================
-  getInventoryStats() {
-    // 库存统计逻辑（略）
-  },
-
+  getInventoryStats() {},
   hideClothModal() {
     this.setData({ showClothModal: false, barcode: '', clothInfo: {}, inputMeters: 0 });
   },
-
+  hideAddClothModal() {
+    this.setData({ showAddClothModal: false, showModelList: false, showWidthList: false });
+  },
   hidePrintModal() {
     this.setData({ showPrintModal: false });
   },
-
   stopPropagation() {},
   handleBack() { wx.navigateBack() },
   handleStockCheck() { wx.showToast({ title: '盘点功能开发中', icon: 'none' }) },

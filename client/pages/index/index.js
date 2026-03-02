@@ -12,6 +12,10 @@ Page({
     isPc: false,
     todoCount: 0, // 接口返回的待办总数
     todoList: [],  // 接口返回的待办列表
+    // 新增：租户信息（独立字段，便于WXML直接绑定）
+    tenantInfo: {
+      name: '' // 初始化空值，后续从工具类获取
+    },
     userInfo: {    // 用户信息（可后续也从接口获取）
       name: "张三",
       dept: "技术部 - 前端开发工程师"
@@ -52,6 +56,8 @@ Page({
   onShow() {
     // 新增：页面重新显示时刷新功能权限（防止功能开关修改后未刷新）
     this.initFunctionPermission();
+    // 重新初始化租户信息（防止租户切换后未刷新）
+    this.initUserInfo();
     // 页面重新显示时刷新数据（比如从其他页面返回）（原有逻辑保留）
     this.fetchTodoData();
   },
@@ -62,13 +68,57 @@ Page({
   initUserInfo() {
     // 获取当前租户信息
     const tenantInfo = tenantUtil.getTenantInfo();
+    // 先设置独立的租户信息字段（供WXML直接绑定）
     if (tenantInfo && tenantInfo.name) {
-      // 租户信息合并到用户部门，区分不同租户
+      this.setData({
+        tenantInfo: {
+          name: tenantInfo.name
+        }
+      });
+    } else {
+      this.setData({
+        tenantInfo: {
+          name: "群星"
+        }
+      })
+    }
+
+    // 租户信息合并到用户部门（保留原有逻辑，兼容历史展示）
+    if (tenantInfo && tenantInfo.name) {
       this.setData({
         userInfo: {
           ...this.data.userInfo,
-          dept: `${tenantInfo.name} - ${this.data.userInfo.dept}`
+          dept: `${tenantInfo.name} - ${this.data.userInfo.dept.split(' - ').pop()}`
         }
+      });
+    }
+  },
+
+  /**
+ * 新增：点击"加入组织"的处理事件
+ */
+  handleJoinTenant() {
+    // 判断是否已有租户
+    if (this.data.tenantInfo.name) {
+      // 已有租户时可跳转到租户详情/切换租户页面
+      wx.showToast({
+        title: `当前租户：${this.data.tenantInfo.name}`,
+        icon: 'none',
+        duration: 2000
+      });
+      // 可选：跳转租户管理页面
+      // wx.navigateTo({
+      //   url: '/pages/tenantManage/tenantManage'
+      // });
+    } else {
+      // 无租户时跳转到加入/选择租户页面
+      wx.showToast({
+        title: '前往加入组织',
+        icon: 'none',
+        duration: 1500
+      });
+      wx.navigateTo({
+        url: '/pages/joinTenant/joinTenant' // 替换为实际加入租户页面路径
       });
     }
   },
@@ -102,8 +152,7 @@ Page({
       // asset: functionAuth.checkEnable('asset'),
       // more: functionAuth.checkEnable('more'),
       // badProduct: functionAuth.checkEnable('badProduct')
-      
-    };
+    }
 
     // 判断是否有任意功能启用（用于空状态显示）
     const hasAnyFunctionEnable = Object.values(functionEnable).some(enable => enable === true);
