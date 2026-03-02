@@ -62,7 +62,7 @@ page {
 }
 .nav-back-hover, .nav-add-hover, .nav-back:active, .nav-add:active {
   background-color: #f5f5f5;
-  transform: scale(0.95);
+  opacity: 0.9;
 }
 .back-icon, .add-icon {
   width: clamp(16px, calc(100vw / 375 * 20), 24px);
@@ -82,58 +82,89 @@ page {
   text-align: center;
 }
 
-/* 筛选区 */
+/* 筛选区 - 核心修复：对齐问题 + 极致缩小宽度 */
 .defective-filter {
   width: 100%;
   margin-bottom: clamp(12px, calc(100vw / 375 * 16), 20px);
 }
 .filter-group {
   display: flex;
-  align-items: center;
+  /* 关键修复：改为flex-start，让标签和选项顶对齐，解决错位 */
+  align-items: flex-start;
   margin-bottom: clamp(8px, calc(100vw / 375 * 12), 16px);
   flex-wrap: wrap;
-  row-gap: clamp(6px, calc(100vw / 375 * 8), 10px);
+  /* 缩小行间距，视觉更紧凑 */
+  row-gap: clamp(4px, calc(100vw / 375 * 6), 8px);
+  /* 确保标签和选项在同一基准线 */
+  align-content: flex-start;
 }
 .filter-label {
   font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
   color: #666;
-  min-width: clamp(48px, calc(100vw / 375 * 60), 72px);
+  /* 极致缩小标签宽度 */
+  min-width: clamp(40px, calc(100vw / 375 * 50), 60px);
   flex-shrink: 0;
+  /* 关键：让标签文字和选项中心对齐 */
+  display: flex;
+  align-items: center;
+  height: clamp(28px, calc(100vw / 375 * 32), 36px);
 }
 .filter-items {
   display: flex;
   flex-wrap: wrap;
-  gap: clamp(6px, calc(100vw / 375 * 8), 10px);
+  /* 缩小选项间距 */
+  gap: clamp(4px, calc(100vw / 375 * 6), 8px);
   flex: 1;
+  /* 关键：选项容器顶对齐，消除多余空隙 */
+  align-items: flex-start;
 }
 .filter-item {
-  padding: clamp(4px, calc(100vw / 375 * 6), 8px) clamp(10px, calc(100vw / 375 * 12), 14px);
+  /* 极致缩小内边距和高度 */
+  padding: clamp(2px, calc(100vw / 375 * 4), 6px) clamp(8px, calc(100vw / 375 * 10), 12px);
   background-color: #fff;
   border-radius: clamp(16px, calc(100vw / 375 * 20), 24px);
   font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
   color: #666;
   transition: all 0.2s ease;
   box-shadow: 0 clamp(1px, calc(100vw / 375 * 2), 3px) clamp(8px, calc(100vw / 375 * 12), 16px) rgba(245, 166, 35, 0.06);
-  min-width: clamp(48px, calc(100vw / 375 * 60), 72px);
+  /* 极致缩小最小宽度，适配短文字 */
+  min-width: clamp(36px, calc(100vw / 375 * 45), 55px);
   text-align: center;
   flex-shrink: 0;
   touch-action: manipulation;
+  line-height: 1.4;
+  /* 固定高度，确保和标签完美对齐 */
+  height: clamp(28px, calc(100vw / 375 * 32), 36px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .filter-item.active {
   background: linear-gradient(90deg, #F5A623, #FFB84D);
   color: #fff;
 }
+.filter-item:active {
+  opacity: 0.9;
+}
+
+/* 日期选择器 - 极致缩小，与筛选项高度一致 */
 .date-picker {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: clamp(4px, calc(100vw / 375 * 6), 8px) clamp(10px, calc(100vw / 375 * 12), 14px);
+  /* 匹配筛选项的内边距和高度 */
+  padding: clamp(2px, calc(100vw / 375 * 4), 6px) clamp(8px, calc(100vw / 375 * 10), 12px);
   background-color: #fff;
   border-radius: clamp(16px, calc(100vw / 375 * 20), 24px);
   font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
   color: #666;
-  min-width: clamp(120px, calc(100vw / 375 * 140), 160px);
-  flex: 1;
+  /* 极致缩小日期框宽度 */
+  min-width: clamp(80px, calc(100vw / 375 * 80), 30px);
+  max-width: clamp(120px, calc(100vw / 375 * 140), 50px);
+  flex-shrink: 0;
+  line-height: 1.4;
+  /* 固定高度，强制与标签、筛选项对齐 */
+  height: clamp(28px, calc(100vw / 375 * 32), 36px);
 }
 .arrow-icon {
   width: clamp(12px, calc(100vw / 375 * 14), 16px);
@@ -442,6 +473,10 @@ page {
   .defective-section.empty-section {
     padding: clamp(30px, calc(100vw / 375 * 40), 50px) 0;
     min-height: clamp(80px, calc(100vw / 375 * 100), 120px);
+  }
+  .date-picker {
+    min-width: clamp(70px, calc(100vw / 375 * 90), 110px);
+    max-width: clamp(110px, calc(100vw / 375 * 130), 150px);
   }
 }
 
