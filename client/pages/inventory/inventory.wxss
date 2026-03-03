@@ -180,7 +180,7 @@ page {
   color: #D48806;
 }
 
-/* 记录列表 */
+/* 记录列表 - 核心修改区域 */
 .record-list {
   width: 100%;
 }
@@ -189,6 +189,9 @@ page {
   padding: 8px 0;
   border-bottom: 1px solid #f5f5f5;
   margin-bottom: 8px;
+  /* 新增：添加内边距，让内容不贴边 */
+  padding-left: 4px;
+  padding-right: 4px;
 }
 .header-col {
   font-size: 16px;
@@ -198,35 +201,43 @@ page {
   line-height: 1.2;
   display: flex;
   align-items: center;
-  justify-content: center;
+  /* 关键修改：重新分配列宽，增加间距 */
+  padding: 0 8px; /* 新增：列内边距，增加间距 */
+  box-sizing: border-box;
 }
+/* 关键修改：调整各列宽度比例 */
 .time-col {
-  width: 20%;
+  width: 25%;
   text-align: left;
   justify-content: flex-start;
 }
 .type-col {
-  width: 20%;
+  width: 25%; 
   text-align: center;
 }
-.goods-col {
-  width: 30%;
+.model-col { /* 新增：专门的型号列样式 */
+  width: 25%; /* 新增：足够宽的型号列 */
   text-align: center;
+  justify-content: center;
 }
-.count-col {
-  width: 15%;
+.meter-col { /* 新增：专门的米数列样式 */
+  width: 25%; /* 新增：足够宽的米数列 */
   text-align: center;
+  justify-content: center;
 }
-.status-col {
-  width: 15%;
-  text-align: center;
+/* 废弃原有多余的列样式 */
+.goods-col, .count-col, .status-col {
+  display: none;
 }
 
-/* 记录项 */
+/* 记录项 - 同步修改 */
 .record-item {
   display: flex;
   padding: 12px 0;
   border-bottom: 1px solid #f9f9f9;
+  /* 新增：和表头保持一致的内边距 */
+  padding-left: 4px;
+  padding-right: 4px;
 }
 .record-item:last-child {
   border-bottom: none;
@@ -238,13 +249,31 @@ page {
   line-height: 1.2;
   display: flex;
   align-items: center;
-  justify-content: center;
+  /* 关键修改：同步列内边距 */
+  padding: 0 8px;
+  box-sizing: border-box;
 }
-.time-col {
-  width: 20%;
+/* 同步调整记录项的列宽 */
+.record-col.time-col {
+  width: 25%;
   text-align: left;
   justify-content: flex-start;
 }
+.record-col.type-col {
+  width: 25%;
+  text-align: center;
+}
+.record-col.model-col {
+  width: 25%;
+  text-align: left;
+  justify-content: center;
+}
+.record-col.meter-col {
+  width: 25%;
+  text-align: center;
+  justify-content: center;
+}
+
 .type-in {
   line-height: 0px;
   color: #52C41A;
@@ -270,74 +299,12 @@ page {
   color: #999;
 }
 
-/* 扫码弹窗 */
-.modal-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-.modal-content {
-  width: 80%;
-  max-width: 300px;
-  background-color: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  box-sizing: border-box;
-}
-.modal-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  text-align: center;
-  margin-bottom: 20px;
-}
-.modal-info {
-  margin-bottom: 24px;
-}
-.info-label {
-  font-size: 16px;
-  color: #666;
-}
-.info-value {
-  font-size: 16px;
-  color: #333;
-  font-weight: 500;
-}
-.modal-actions {
-  display: flex;
-  gap: 12px;
-}
-.modal-btn {
-  flex: 1;
-  height: 44px;
-  line-height: 44px;
-  border-radius: 8px;
-  font-size: 16px;
-}
-.cancel-btn {
-  background-color: #f5f5f5;
-  color: #666;
-  border: none;
-}
-.confirm-btn {
-  background: linear-gradient(90deg, #F5A623, #FFB84D);
-  color: #fff;
-  border: none;
-}
-
 /* 阻止事件冒泡 */
 .stopPropagation {
   pointer-events: auto;
 }
 
-/* 弹窗遮罩 */
+/* 弹窗遮罩（统一） */
 .modal-mask {
   position: fixed;
   top: 0;
@@ -351,7 +318,7 @@ page {
   z-index: 999;
 }
 
-/* 弹窗内容 */
+/* 弹窗内容（统一） */
 .modal-content {
   width: 80%;
   max-width: 400rpx;
@@ -360,8 +327,14 @@ page {
   padding: 30rpx;
   box-sizing: border-box;
 }
+/* 手动入库弹窗适配（更大宽度） */
+.modal-content.add-cloth-modal {
+  max-width: 500rpx;
+  max-height: 80vh;
+  overflow-y: auto;
+}
 
-/* 弹窗标题 */
+/* 弹窗标题（统一） */
 .modal-title {
   font-size: 32rpx;
   font-weight: bold;
@@ -370,7 +343,62 @@ page {
   color: #333;
 }
 
-/* 弹窗信息 */
+/* 弹窗信息行（基础） */
+.info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+.info-row text {
+  font-size: 28rpx;
+  color: #666;
+  min-width: 120rpx;
+}
+.info-row input {
+  flex: 1;
+  height: 70rpx;
+  border: 1px solid #eee;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 🔥 新增：型号搜索下拉列表样式（适配原有设计） */
+.model-list {
+  position: absolute;
+  top: 80rpx;
+  left: 120rpx;
+  right: 0;
+  background: #fff;
+  border: 1px solid #f5f5f5;
+  border-radius: 12rpx;
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.08);
+  max-height: 200rpx;
+  overflow-y: auto;
+  z-index: 1000;
+}
+.model-item {
+  padding: 12rpx 20rpx;
+  border-bottom: 1px solid #f9f9f9;
+  font-size: 28rpx;
+  color: #333;
+  transition: all 0.2s ease;
+}
+.model-item:last-child {
+  border-bottom: none;
+}
+.model-item.create-item {
+  color: #F5A623; /* 适配原有主题色 */
+  font-weight: 500;
+}
+.model-item:active {
+  background-color: #fafafa;
+}
+
+/* 弹窗信息（原有） */
 .modal-info {
   display: flex;
   margin-bottom: 20rpx;
@@ -419,53 +447,33 @@ page {
   font-size: 28rpx;
 }
 
-/* 弹窗操作按钮 */
-.modal-actions {
+/* 弹窗操作按钮（统一） */
+.modal-actions, .oper-btns {
   display: flex;
   gap: 20rpx;
   margin-top: 20rpx;
 }
-.modal-btn {
+.modal-btn, .btn {
   flex: 1;
   height: 80rpx;
   line-height: 80rpx;
   border-radius: 8rpx;
   font-size: 28rpx;
+  border: none;
 }
-.cancel-btn {
+.cancel-btn, .btn.cancel {
   background: #f5f5f5;
   color: #666;
-  border: none;
+  line-height: 30px;
 }
-.confirm-btn {
-  background: #0088ff;
+.confirm-btn, .btn.in {
+  background: linear-gradient(90deg, #F5A623, #FFB84D); /* 适配原有主题渐变 */
   color: #fff;
-  border: none;
+  line-height: 30px;
 }
-
-/* 快捷操作区 */
-.quick-actions {
-  display: flex;
-  gap: 20rpx;
-  padding: 20rpx;
-}
-.action-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20rpx 0;
-  background: #fff;
-  border-radius: 16rpx;
-}
-.action-icon {
-  width: 80rpx;
-  height: 80rpx;
-  margin-bottom: 10rpx;
-}
-.action-text {
-  font-size: 26rpx;
-  color: #333;
+.btn.out {
+  background: #F5222D;
+  color: #fff;
 }
 
 /* 打印弹窗样式 */

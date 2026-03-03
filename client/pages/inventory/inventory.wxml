@@ -1,6 +1,5 @@
 <scroll-view class="scroll-container" scroll-y>
   <view class="container">
-
     <!-- 顶部导航 -->
     <view class="top-nav">
       <view class="nav-back" bindtap="handleBack">
@@ -35,11 +34,16 @@
       </view>
     </view>
 
-    <!-- 快捷操作：只保留一个 → 扫码出入库 -->
+    <!-- 快捷操作 -->
     <view class="quick-actions">
+      <!-- 手动入库 -->
+      <view class="action-item" bindtap="handleAddCloth">
+        <image class="action-icon" src="/images/hand.png"></image>
+        <text class="action-text">手动入库</text>
+      </view>
       <view class="action-item" bindtap="handleScanCode">
         <image class="action-icon" src="/images/scan_all.png"></image>
-        <text class="action-text">扫码出入库</text>
+        <text class="action-text">扫码出库</text>
       </view>
       <view class="action-item" bindtap="handleStockCheck">
         <image class="action-icon" src="/images/check.png"></image>
@@ -77,11 +81,10 @@
   </view>
 </scroll-view>
 
-<!-- ===================== 核心弹窗：布匹信息 ===================== -->
+<!-- 原有弹窗：扫码出入库 -->
 <view class="modal-mask" wx:if="{{showClothModal}}" bindtap="hideClothModal">
   <view class="modal-content" catchtap="stopPropagation">
     <view class="modal-title">布匹信息</view>
-
     <view class="info-row">
       <text>条码：</text>
       <text>{{barcode}}</text>
@@ -98,10 +101,58 @@
       <text>入库米数：</text>
       <input type="digit" bindinput="onMetersInput" placeholder="请输入米数" />
     </view>
-
     <view class="oper-btns">
       <button class="btn in" bindtap="doIn" wx:if="{{!clothInfo.isInStock}}">入库</button>
       <button class="btn out" bindtap="doOut" wx:if="{{clothInfo.isInStock}}">出库</button>
+    </view>
+  </view>
+</view>
+
+<!-- 手动入库弹窗 -->
+<view class="modal-mask" wx:if="{{showAddClothModal}}" bindtap="hideAddClothModal">
+  <view class="modal-content" catchtap="stopPropagation" style="max-height: 80vh; overflow-y: auto;">
+    <view class="modal-title">新增布匹入库</view>
+
+    <!-- 型号搜索选择 -->
+    <view class="info-row">
+      <text>型号：</text>
+      <input type="text" bindinput="onModelSearch" bindfocus="showModelList" placeholder="请输入"
+        value="{{clothForm.model}}" />
+      <!-- 型号下拉列表 -->
+      <view class="model-list" wx:if="{{showModelList && (modelOptions.length > 0 || clothForm.model.trim() !== '')}}">
+        <view class="model-item" wx:for="{{modelOptions}}" wx:key="index" bindtap="chooseModel" data-model="{{item}}">
+          {{item}}
+        </view>
+        <view class="model-item create-item" wx:if="{{modelOptions.length === 0 && clothForm.model.trim() !== ''}}"
+          bindtap="createModel">
+          新建型号：{{clothForm.model}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 米数输入 -->
+    <view class="info-row">
+      <text>米数：</text>
+      <input type="digit" bindinput="onFormInput" data-field="meters" placeholder="请输入入库米数"
+        value="{{clothForm.meters}}" />
+    </view>
+
+    <!-- 门幅选择（关联型号） -->
+    <view class="info-row">
+      <text>门幅：</text>
+      <input type="text" bindinput="onWidthInput" bindfocus="showWidthList" placeholder="请输入"
+        value="{{clothForm.width}}" readonly="{{!!clothForm.width && modelHasWidth}}" />
+      <!-- 门幅下拉列表（仅显示当前型号的门幅） -->
+      <view class="model-list" wx:if="{{showWidthList && widthOptions.length > 0}}">
+        <view class="model-item" wx:for="{{widthOptions}}" wx:key="index" bindtap="chooseWidth" data-width="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <view class="oper-btns">
+      <button class="btn in" bindtap="doAddCloth">确认</button>
+      <button class="btn cancel" bindtap="hideAddClothModal">取消</button>
     </view>
   </view>
 </view>

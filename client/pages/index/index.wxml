@@ -1,12 +1,19 @@
 <!-- pages/index/index.wxml -->
 <!-- 根容器：承载整个页面内容，预留底部导航高度 -->
 <scroll-view class="scroll-container" scroll-y="true">
-  <view class="container" >
-    <!-- 顶部自定义导航栏：展示小程序名称和LOGO，替代原生导航栏，提升品牌辨识度 -->
-    <!-- 顶部导航：仅左上角保留蜂巢图标，无文字，极简布局 -->
+  <!-- 新增：固定顶部导航容器（独立于滚动区域外） -->
+  <view class="fixed-top-nav-wrap">
     <view class="top-nav">
       <image class="nav-icon" src="/images/hive.png" mode="widthFix" lazy-load="true"></image>
+      <!-- 修改：租户名称展示（无租户时显示"加入组织"） -->
+      <text class="tenant-name" selectable="false" bindtap="handleJoinTenant">
+        {{tenantInfo.name || '加入组织'}}
+      </text>
     </view>
+  </view>
+
+  <view class="container" >
+    <!-- 移除原顶部导航，改为外部固定容器 -->
 
     <!-- 用户信息卡片：展示用户身份信息和待办事项总数，快速触达个人待办 -->
     <view class="user-card">
@@ -16,6 +23,8 @@
       <view class="user-info">
         <text class="user-name" selectable="false">{{userInfo.name}}</text>
         <text class="user-dept" selectable="false">{{userInfo.dept}}</text>
+        <!-- 新增：用户信息区域补充租户名称（次要展示位置） -->
+        <text class="user-tenant" selectable="false">{{tenantInfo.name || '未加入任何组织'}}</text>
       </view>
       <view class="user-todo" bindtap="handleJumpToTodoList">
         <!-- 动态绑定接口返回的待办数量 -->
