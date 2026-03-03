@@ -29,7 +29,7 @@
       <view class="user-todo" bindtap="handleJumpToTodoList">
         <!-- 动态绑定接口返回的待办数量 -->
         <text class="todo-num" selectable="false">{{todoCount}}</text>
-        <text class="todo-text" selectable="false">待</text>
+        <text class="todo-text" selectable="false">待办事项</text>
       </view>
     </view>
 
