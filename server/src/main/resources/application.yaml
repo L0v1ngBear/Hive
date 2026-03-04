@@ -1,0 +1,9 @@
+server:
+  servlet:
+    port: 8080
+    context-path: /api
+mybatis-plus:
+  type-aliases-package: my.Hive_Back.module.*.model.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true # ????????
