@@ -1,0 +1,35 @@
+<view class="container">
+  <view class="search-bar">
+    <icon type="search" size="16"></icon>
+    <input placeholder="搜索公司名称" bindinput="handleSearch" />
+    <button class="add-mini-btn" bindtap="goToAdd">新增客户</button>
+  </view>
+
+  <scroll-view class="customer-list" scroll-y="true">
+    <block wx:for="{{customerList}}" wx:key="id">
+      <view class="customer-card" bindtap="goToDetail" data-id="{{item.id}}">
+        <view class="card-header">
+          <text class="company-name">{{item.companyName}}</text>
+          <text class="customer-tag {{item.customerType == 1 ? 'blue' : 'orange'}}">
+            {{item.customerType == 1 ? '总包' : '业主'}}
+          </text>
+        </view>
+        <view class="card-body">
+          <view class="info-row">
+            <text class="label">施工区域：</text>
+            <text class="value">{{item.region}}</text>
+          </view>
+          <view class="info-row">
+            <text class="label">合作项目：</text>
+            <text class="value">{{item.projectName}} ({{item.projectCount}}个)</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:if="{{customerList.length === 0}}" class="empty-holder">
+      <image src="/images/empty.png" mode="widthFix"></image>
+      <text>暂无客户数据</text>
+    </view>
+  </scroll-view>
+</view>

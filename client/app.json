@@ -7,7 +7,9 @@
     "pages/salesOrder/salesOrder", 
     "pages/knowledge/knowledge", 
     "pages/orderDetail/orderDetail",
-    "pages/badProduct/badProduct"
+    "pages/badProduct/badProduct",
+    "pages/customer/customer",
+    "pages/customer/customerEdit"
   ],
   "window": {
     "navigationBarTextStyle": "black",

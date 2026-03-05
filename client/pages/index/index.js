@@ -40,7 +40,8 @@ Page({
       notice: false,
       file: false,
       badProduct: false,
-      knowledge: false    // 企业知识库 (新增)
+      knowledge: false,
+      customer: true,
     },
     hasAnyFunctionEnable: false
   },
@@ -111,7 +112,8 @@ Page({
       notice: true,
       file: false,
       badProduct: true,
-      knowledge: true      // 企业知识库显示
+      knowledge: true, 
+      customer: true     // 企业知识库显示
     }
 
     const hasAnyFunctionEnable = Object.values(functionEnable).some(enable => enable === true);
@@ -181,7 +183,8 @@ Page({
       asset: "资产管理",
       more: "更多功能",
       badProduct: "次品管理",
-      knowledge: "企业知识库"     // 新增
+      knowledge: "企业知识库",
+      customer: "客户管理"    // 新增
     };
     return functionMap[type] || "未知功能";
   },

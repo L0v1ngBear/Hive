@@ -60,13 +60,19 @@
           <image class="grid-icon" src="/images/inventory.png" mode="widthFix" lazy-load="true"></image>
           <text class="grid-text" selectable="false">库存管理</text>
         </view>
-        
+
         <view wx:if="{{functionEnable.badProduct}}" class="grid-item" bindtap="handleFunctionTap"
           data-function-type="badProduct" hover-class="grid-item-hover">
           <image class="grid-icon" src="/images/badproduct.png" mode="widthFix" lazy-load="true"></image>
           <text class="grid-text" selectable="false">次品管理</text>
         </view>
-        
+
+        <view wx:if="{{functionEnable.customer}}" class="grid-item" bindtap="handleFunctionTap"
+          data-function-type="customer" hover-class="grid-item-hover">
+          <image class="grid-icon" src="/images/customer.png" mode="widthFix" lazy-load="true"></image>
+          <text class="grid-text" selectable="false">客户管理</text>
+        </view>
+
         <view wx:if="{{functionEnable.approval}}" class="grid-item" bindtap="handleFunctionTap"
           data-function-type="approval" hover-class="grid-item-hover">
           <image class="grid-icon" src="/images/approval.png" mode="widthFix" lazy-load="true"></image>
