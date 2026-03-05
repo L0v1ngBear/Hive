@@ -4,6 +4,8 @@
     "pages/attendance/attendance",
     "pages/inventory/inventory",
     "pages/order/order",
+    "pages/salesOrder/salesOrder", 
+    "pages/knowledge/knowledge", 
     "pages/orderDetail/orderDetail",
     "pages/badProduct/badProduct"
   ],
@@ -13,16 +15,6 @@
   },
   "style": "v2",
   "renderer": "webview",
-  "rendererOptions": {
-    "skyline": {
-      "defaultDisplayBlock": true,
-      "defaultContentBox": true,
-      "tagNameStyleIsolation": "legacy",
-      "disableABTest": true,
-      "sdkVersionBegin": "3.0.0",
-      "sdkVersionEnd": "15.255.255"
-    }
-  },
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents"

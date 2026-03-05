@@ -1,49 +1,41 @@
-<scroll-view 
-  class="scroll-container" 
-  scroll-y="true" 
-  scroll-with-animation="true"
-  enhanced="true"
-  bounces="true"
->
-  <view class="container">
-    <!-- 顶部导航：对齐库存页面样式 -->
-    <view class="top-nav">
-      <view class="nav-back" bindtap="handleBack" hover-class="nav-back-hover">
-        <image class="back-icon" src="/images/back.png" mode="widthFix" lazy-load="true"></image>
-      </view>
-      <text class="nav-title">纺织订单管理</text>
-      <view class="nav-scan" bindtap="handleScanOrder" hover-class="nav-scan-hover">
-        <image class="scan-icon" src="/images/scan.png" mode="widthFix" lazy-load="true"></image>
-      </view>
+<view class="container">
+  <view class="top-nav">
+    <view class="nav-back" bindtap="handleBack" hover-class="nav-back-hover">
+      <image class="back-icon" src="/images/back.png" mode="widthFix" lazy-load="true"></image>
     </view>
-
-    <!-- 筛选区：适配库存页面样式规范 -->
-    <view class="order-filter">
-      <view class="filter-item {{currentFilter==item.key?'active':''}}" wx:for="{{filterList}}" wx:key="key"
-        bindtap="handleFilter" data-filter="{{item.key}}">
-        {{item.label}}
-      </view>
+    <text class="nav-title">纺织订单管理</text>
+    <view class="nav-scan" bindtap="handleScanOrder" hover-class="nav-scan-hover">
+      <image class="scan-icon" src="/images/scan.png" mode="widthFix" lazy-load="true"></image>
     </view>
+  </view>
 
-    <!-- 订单列表：统一内容块样式 - 核心修复：移除固定间距，根据数据动态调整 -->
+  <scroll-view class="order-filter" scroll-x="true" enable-flex="true" show-scrollbar="false">
+    <view class="filter-item {{currentFilter==item.key?'active':''}}" wx:for="{{filterList}}" wx:key="key"
+      catchtap="handleFilter" data-filter="{{item.key}}">
+      {{item.label}}
+    </view>
+  </scroll-view>
+
+  <scroll-view 
+    class="list-scroll-container" 
+    scroll-y="true" 
+    scroll-with-animation="true"
+    enhanced="true"
+    bounces="true"
+  >
     <view class="order-section {{filteredOrderList.length === 0 ? 'empty-section' : ''}}">
-      <!-- 空数据提示 - 修复：优化空数据样式，减少不必要的间距 -->
       <view wx:if="{{filteredOrderList.length === 0}}" class="empty-record">
         <text>暂无相关订单数据</text>
       </view>
 
-      <!-- 订单卡片列表 -->
       <block wx:for="{{filteredOrderList}}" wx:key="orderId">
-        <!-- 修复：将卡片的bindtap移到内部容器，避免阻止滚动 -->
         <view class="order-card">
-          <!-- 订单详情点击区域 -->
           <view class="card-content" bindtap="openDetail" data-order="{{item}}">
             <view class="order-head">
               <text class="order-id">订单号：{{item.orderId}}</text>
               <text class="order-status">{{statusMap[item.status]}}</text>
             </view>
 
-            <!-- 纺织核心信息 -->
             <view class="info-group">
               <view class="info-line">
                 <text class="info-label">型号：</text>
@@ -67,7 +59,6 @@
               </view>
             </view>
 
-            <!-- 生产进度 -->
             <view class="process-box" wx:if="{{item.status == 'producing'}}">
               <text class="process-title">当前生产工序：</text>
               <view class="process-flow">
@@ -79,7 +70,6 @@
               </view>
             </view>
 
-            <!-- 状态机 -->
             <view class="status-flow">
               <view class="node {{item.status=='pending_confirm'?'active':(item.statusIndex>=0?'done':'')}}">待确认</view>
               <view class="line {{item.statusIndex>=1?'done':''}}"></view>
@@ -93,17 +83,15 @@
             </view>
           </view>
 
-          <!-- 新增：更新状态按钮 -->
           <view class="order-action" catchtap="openUpdateModal" data-order="{{item}}">
             <button class="update-btn" size="mini" type="primary">更新状态</button>
           </view>
         </view>
       </block>
     </view>
-  </view>
-</scroll-view>
+  </scroll-view>
+</view>
 
-<!-- 扫码更新弹窗：对齐库存页面弹窗样式 -->
 <view class="modal-mask" wx:if="{{showModal}}" bindtap="closeModal">
   <view class="modal-content" catchtap="stopPropagation">
     <view class="modal-title">更新订单状态</view>
@@ -128,7 +116,6 @@
         </picker>
       </view>
 
-      <!-- 替换为扫码按钮 -->
       <view class="picker-wrap mt-20" wx:else>
         <text class="picker-label">更新状态：</text>
         <view class="scan-status-btn" bindtap="scanToUpdateStatus">
