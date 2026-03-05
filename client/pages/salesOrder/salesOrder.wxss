@@ -39,3 +39,14 @@
   color: #666;
   border: 1px solid #ddd;
 }
+
+.show-scrollbar::-webkit-scrollbar {
+  display: block !important;
+  width: 4px !important;
+  background-color: transparent;
+  }
+  
+  .show-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.2);
+  }

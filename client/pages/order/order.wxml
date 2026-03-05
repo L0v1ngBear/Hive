@@ -9,12 +9,12 @@
     </view>
   </view>
 
-  <scroll-view class="order-filter" scroll-x="true" enable-flex="true" show-scrollbar="false">
+  <view class="order-filter">
     <view class="filter-item {{currentFilter==item.key?'active':''}}" wx:for="{{filterList}}" wx:key="key"
       catchtap="handleFilter" data-filter="{{item.key}}">
       {{item.label}}
     </view>
-  </scroll-view>
+  </view>
 
   <scroll-view 
     class="list-scroll-container" 
