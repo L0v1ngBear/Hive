@@ -7,6 +7,22 @@ Page({
     contacts: [{ name: '', phone: '' }] // 初始一个联系人
   },
 
+  onLoad(options) {
+    if (options.id) {
+      this.setData({ isEdit: true });
+      this.fetchCustomerDetail(options.id);
+      wx.setNavigationBarTitle({ title: '客户详情' });
+    } else {
+      wx.setNavigationBarTitle({ title: '新增客户' });
+    }
+  },
+
+  async fetchCustomerDetail(id) {
+    // 模拟根据ID获取详情并填充 data
+    // const res = await request({ url: `/api/customer/detail/${id}` });
+    // this.setData({ ...res.data });
+  },
+
   // 改变客户类型
   handleTypeChange(e) {
     this.setData({ typeIndex: e.detail.value });
