@@ -19,12 +19,15 @@ page {
   display: none;
 }
 
-/* 根容器：贴屏且保留统一空隙 */
+/* 根容器：改用 Flex 布局以分配剩余空间 */
 .container {
   width: 100%;
+  min-height: 100%; /* 确保容器至少与屏幕等高 */
   padding: 0 12px;
-  padding-bottom: 30px;
+  padding-bottom: 20px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column; /* 垂直排列 */
 }
 
 /* 顶部导航：与内容块左对齐 */
@@ -33,10 +36,11 @@ page {
   align-items: center;
   justify-content: space-between;
   padding: 12px 0;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   width: calc(100% - 24px);
   margin-left: auto;
   margin-right: auto;
+  flex-shrink: 0;
 }
 .nav-back {
   width: 36px;
@@ -51,9 +55,9 @@ page {
   background-color: #f5f5f5;
   transform: scale(0.95);
 }
-.back-icon {
-  width: calc(100vw / 375 * 40); /* 从20改为24，比例放大 */
-  height: calc(100vw / 375 * 40); /* 保持宽高一致，避免变形 */
+.back-icon, .scan-icon {
+  width: 24px;
+  height: 24px;
 }
 .nav-title {
   font-size: 18px;
@@ -73,18 +77,15 @@ page {
   background-color: #f5f5f5;
   transform: scale(0.95);
 }
-.scan-icon {
-  width: 20px;
-  height: 20px;
-}
 
-/* 统一内容块样式 */
+/* 统一内容块样式：缩小间距 */
 .inventory-overview, .quick-actions, .record-section {
   width: 100%;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(245, 166, 35, 0.06);
-  margin-bottom: 16px;
+  margin-bottom: 10px; /* 间距变小，更紧凑 */
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 /* 库存概览卡片 */
@@ -104,17 +105,20 @@ page {
   align-items: center;
 }
 .stat-item {
-  text-align: center;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 4px;
 }
 .stat-label {
-  font-size: 16px;
+  font-size: 15px;
   color: #666;
   display: block;
   margin-bottom: 8px;
 }
 .stat-value {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
   color: #333;
 }
@@ -128,7 +132,7 @@ page {
 /* 快捷操作区 */
 .quick-actions {
   background-color: #fff;
-  padding: 20px;
+  padding: 16px 20px;
   display: flex;
   justify-content: space-around;
 }
@@ -151,152 +155,110 @@ page {
   margin-bottom: 8px;
 }
 .action-text {
-  font-size: 16px;
+  font-size: 15px;
   color: #333;
 }
 
-/* 操作记录区域 */
+/* 操作记录区域：填满底部空间 */
 .record-section {
   background-color: #fff;
   padding: 20px;
+  flex: 1; /* 核心修改：占据剩余垂直空间 */
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 .section-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  flex-shrink: 0;
 }
 .section-title text:first-child {
   font-size: 18px;
   font-weight: 600;
   color: #333;
 }
-.record-more {
-  font-size: 16px;
-  color: #F5A623;
-}
-.record-more-hover, .record-more:active {
-  opacity: 0.8;
-  color: #D48806;
+.section-title text:last-child {
+  font-size: 15px;
+  color: #999;
 }
 
-/* 记录列表 - 核心修改区域 */
+/* ================= 记录列表 & 表格优化 ================= */
 .record-list {
   width: 100%;
-}
-.record-header {
-  display: flex;
-  padding: 8px 0;
-  border-bottom: 1px solid #f5f5f5;
-  margin-bottom: 8px;
-  /* 新增：添加内边距，让内容不贴边 */
-  padding-left: 4px;
-  padding-right: 4px;
-}
-.header-col {
-  font-size: 16px;
-  font-weight: 600;
-  color: #999;
-  word-break: break-all;
-  line-height: 1.2;
-  display: flex;
-  align-items: center;
-  /* 关键修改：重新分配列宽，增加间距 */
-  padding: 0 8px; /* 新增：列内边距，增加间距 */
-  box-sizing: border-box;
-}
-/* 关键修改：调整各列宽度比例 */
-.time-col {
-  width: 25%;
-  text-align: left;
-  justify-content: flex-start;
-}
-.type-col {
-  width: 25%; 
-  text-align: center;
-}
-.model-col { /* 新增：专门的型号列样式 */
-  width: 25%; /* 新增：足够宽的型号列 */
-  text-align: center;
-  justify-content: center;
-}
-.meter-col { /* 新增：专门的米数列样式 */
-  width: 25%; /* 新增：足够宽的米数列 */
-  text-align: center;
-  justify-content: center;
-}
-/* 废弃原有多余的列样式 */
-.goods-col, .count-col, .status-col {
-  display: none;
+  flex: 1; 
 }
 
-/* 记录项 - 同步修改 */
+/* 表头：加深底边框，淡灰底色更像真实表格 */
+.record-header {
+  display: flex;
+  align-items: center; /* 确保垂直居中 */
+  padding: 12px 8px;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 8px;
+  background-color: #f7f8fa;
+  border-radius: 6px;
+}
+
+/* 数据行：加深底边框 */
 .record-item {
   display: flex;
-  padding: 12px 0;
-  border-bottom: 1px solid #f9f9f9;
-  /* 新增：和表头保持一致的内边距 */
-  padding-left: 4px;
-  padding-right: 4px;
+  align-items: center; /* 确保垂直居中 */
+  padding: 12px 8px;
+  border-bottom: 1px solid #ebebeb;
+  transition: background-color 0.2s;
 }
 .record-item:last-child {
   border-bottom: none;
 }
-.record-col {
-  font-size: 16px;
-  color: #333;
+.record-item:active {
+  background-color: #fcfcfc; /* 按压反馈 */
+}
+
+/* 表头与内容公共列属性 */
+.header-col, .record-col {
+  font-size: 15px;
   word-break: break-all;
-  line-height: 1.2;
-  display: flex;
-  align-items: center;
-  /* 关键修改：同步列内边距 */
-  padding: 0 8px;
   box-sizing: border-box;
+  padding: 0 4px;
+  /* 去除了原先多余的 display:flex 避免影响内部文本 */
 }
-/* 同步调整记录项的列宽 */
-.record-col.time-col {
-  width: 25%;
+.header-col {
+  color: #999;
+  font-weight: 500;
+}
+.record-col {
+  color: #333;
+}
+
+/* 列宽分配与水平对齐 */
+.time-col {
+  flex: 1;
   text-align: left;
-  justify-content: flex-start;
 }
-.record-col.type-col {
-  width: 25%;
+.type-col {
+  flex: 1;
   text-align: center;
 }
-.record-col.model-col {
-  width: 25%;
-  text-align: left;
-  justify-content: center;
-}
-.record-col.meter-col {
-  width: 25%;
+.model-col {
+  flex: 1;
   text-align: center;
-  justify-content: center;
+}
+.meter-col {
+  flex: 1;
+  text-align: right;
+  padding-right: 8px;
 }
 
 .type-in {
-  line-height: 0px;
   color: #52C41A;
+  font-weight: 500;
 }
 .type-out {
-  line-height: 0px;
   color: #F5222D;
-}
-.status-success {
-  line-height: 0px;
-  color: #52C41A;
-}
-.status-fail {
-  line-height: 0px;
-  color: #F5222D;
-}
-
-/* 空记录提示 */
-.empty-record {
-  padding: 32px 0;
-  text-align: center;
-  font-size: 16px;
-  color: #999;
+  font-weight: 500;
 }
 
 /* 阻止事件冒泡 */
@@ -304,7 +266,7 @@ page {
   pointer-events: auto;
 }
 
-/* 弹窗遮罩（统一） */
+/* ================= 弹窗公共样式优化 ================= */
 .modal-mask {
   position: fixed;
   top: 0;
@@ -317,71 +279,67 @@ page {
   justify-content: center;
   z-index: 999;
 }
-
-/* 弹窗内容（统一） */
 .modal-content {
-  width: 80%;
-  max-width: 400rpx;
+  width: 85%;
+  max-width: 600rpx;
   background: #fff;
-  border-radius: 16rpx;
-  padding: 30rpx;
+  border-radius: 24rpx; 
+  padding: 40rpx 30rpx;
   box-sizing: border-box;
 }
-/* 手动入库弹窗适配（更大宽度） */
 .modal-content.add-cloth-modal {
-  max-width: 500rpx;
+  max-width: 600rpx;
   max-height: 80vh;
   overflow-y: auto;
 }
-
-/* 弹窗标题（统一） */
 .modal-title {
-  font-size: 32rpx;
+  font-size: 34rpx;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 30rpx;
   color: #333;
 }
 
-/* 弹窗信息行（基础） */
+/* 弹窗信息行 */
 .info-row {
   display: flex;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;
   position: relative;
 }
 .info-row text {
   font-size: 28rpx;
   color: #666;
-  min-width: 120rpx;
+  min-width: 140rpx;
 }
 .info-row input {
   flex: 1;
-  height: 70rpx;
-  border: 1px solid #eee;
-  border-radius: 8rpx;
-  padding: 0 20rpx;
+  height: 76rpx;
+  border: 1px solid #e8e8e8;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
   box-sizing: border-box;
   font-size: 28rpx;
   color: #333;
+  background-color: #fafafa;
 }
 
-/* 🔥 新增：型号搜索下拉列表样式（适配原有设计） */
+/* 型号搜索下拉列表样式 */
 .model-list {
   position: absolute;
-  top: 80rpx;
-  left: 120rpx;
+  top: 84rpx;
+  left: 140rpx;
   right: 0;
   background: #fff;
   border: 1px solid #f5f5f5;
   border-radius: 12rpx;
-  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.08);
-  max-height: 200rpx;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  max-height: 240rpx;
   overflow-y: auto;
   z-index: 1000;
 }
 .model-item {
-  padding: 12rpx 20rpx;
+  padding: 16rpx 24rpx;
   border-bottom: 1px solid #f9f9f9;
   font-size: 28rpx;
   color: #333;
@@ -391,14 +349,14 @@ page {
   border-bottom: none;
 }
 .model-item.create-item {
-  color: #F5A623; /* 适配原有主题色 */
+  color: #F5A623;
   font-weight: 500;
 }
 .model-item:active {
-  background-color: #fafafa;
+  background-color: #f0f0f0;
 }
 
-/* 弹窗信息（原有） */
+/* 弹窗普通信息展示 */
 .modal-info {
   display: flex;
   margin-bottom: 20rpx;
@@ -414,86 +372,43 @@ page {
   word-break: break-all;
 }
 
-/* 操作类型按钮 */
-.oper-type-btns {
+/* 操作按钮 */
+.modal-actions, .oper-btns, .print-type-btns {
   display: flex;
   gap: 20rpx;
-  margin-bottom: 20rpx;
+  margin-top: 30rpx;
 }
-.oper-btn {
+.modal-btn, .btn, .print-btn {
   flex: 1;
-  height: 80rpx;
-  line-height: 80rpx;
-  border-radius: 8rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 12rpx;
+  font-size: 30rpx;
   border: none;
-  color: #fff;
-  font-size: 28rpx;
-}
-.in-btn {
-  background: #07c160;
-}
-.out-btn {
-  background: #ff4757;
-}
-
-/* 数量输入框 */
-.count-input {
-  width: 100%;
-  height: 70rpx;
-  border: 1px solid #eee;
-  border-radius: 8rpx;
-  padding: 0 20rpx;
-  box-sizing: border-box;
-  font-size: 28rpx;
-}
-
-/* 弹窗操作按钮（统一） */
-.modal-actions, .oper-btns {
-  display: flex;
-  gap: 20rpx;
-  margin-top: 20rpx;
-}
-.modal-btn, .btn {
-  flex: 1;
-  height: 80rpx;
-  line-height: 80rpx;
-  border-radius: 8rpx;
-  font-size: 28rpx;
-  border: none;
+  font-weight: 500;
 }
 .cancel-btn, .btn.cancel {
   background: #f5f5f5;
   color: #666;
-  line-height: 30px;
 }
 .confirm-btn, .btn.in {
-  background: linear-gradient(90deg, #F5A623, #FFB84D); /* 适配原有主题渐变 */
+  background: linear-gradient(90deg, #F5A623, #FFB84D);
   color: #fff;
-  line-height: 30px;
 }
 .btn.out {
   background: #F5222D;
   color: #fff;
 }
 
-/* 打印弹窗样式 */
+/* 打印按钮 */
 .print-type-btns {
-  display: flex;
-  gap: 20rpx;
-  margin: 20rpx 0;
-}
-.print-btn {
-  flex: 1;
-  height: 80rpx;
-  line-height: 80rpx;
-  border-radius: 8rpx;
-  border: none;
-  color: #fff;
-  font-size: 28rpx;
+  margin: 30rpx 0 20rpx 0;
 }
 .preview-btn {
   background: #0088ff;
+  color: #fff;
 }
 .bluetooth-btn {
   background: #07c160;
+  color: #fff;
 }
