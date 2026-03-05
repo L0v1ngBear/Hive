@@ -28,7 +28,6 @@
     </block>
 
     <view wx:if="{{customerList.length === 0}}" class="empty-holder">
-      <image src="/images/empty.png" mode="widthFix"></image>
       <text>暂无客户数据</text>
     </view>
   </scroll-view>
