@@ -82,29 +82,24 @@ page {
   text-align: center;
 }
 
-/* 筛选区 - 核心修复：对齐问题 + 极致缩小宽度 */
+/* 筛选区 */
 .defective-filter {
   width: 100%;
   margin-bottom: clamp(12px, calc(100vw / 375 * 16), 20px);
 }
 .filter-group {
   display: flex;
-  /* 关键修复：改为flex-start，让标签和选项顶对齐，解决错位 */
   align-items: flex-start;
   margin-bottom: clamp(8px, calc(100vw / 375 * 12), 16px);
   flex-wrap: wrap;
-  /* 缩小行间距，视觉更紧凑 */
   row-gap: clamp(4px, calc(100vw / 375 * 6), 8px);
-  /* 确保标签和选项在同一基准线 */
   align-content: flex-start;
 }
 .filter-label {
   font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
   color: #666;
-  /* 极致缩小标签宽度 */
   min-width: clamp(40px, calc(100vw / 375 * 50), 60px);
   flex-shrink: 0;
-  /* 关键：让标签文字和选项中心对齐 */
   display: flex;
   align-items: center;
   height: clamp(28px, calc(100vw / 375 * 32), 36px);
@@ -112,14 +107,11 @@ page {
 .filter-items {
   display: flex;
   flex-wrap: wrap;
-  /* 缩小选项间距 */
   gap: clamp(4px, calc(100vw / 375 * 6), 8px);
   flex: 1;
-  /* 关键：选项容器顶对齐，消除多余空隙 */
   align-items: flex-start;
 }
 .filter-item {
-  /* 极致缩小内边距和高度 */
   padding: clamp(2px, calc(100vw / 375 * 4), 6px) clamp(8px, calc(100vw / 375 * 10), 12px);
   background-color: #fff;
   border-radius: clamp(16px, calc(100vw / 375 * 20), 24px);
@@ -127,13 +119,11 @@ page {
   color: #666;
   transition: all 0.2s ease;
   box-shadow: 0 clamp(1px, calc(100vw / 375 * 2), 3px) clamp(8px, calc(100vw / 375 * 12), 16px) rgba(245, 166, 35, 0.06);
-  /* 极致缩小最小宽度，适配短文字 */
   min-width: clamp(36px, calc(100vw / 375 * 45), 55px);
   text-align: center;
   flex-shrink: 0;
   touch-action: manipulation;
   line-height: 1.4;
-  /* 固定高度，确保和标签完美对齐 */
   height: clamp(28px, calc(100vw / 375 * 32), 36px);
   display: inline-flex;
   align-items: center;
@@ -147,23 +137,20 @@ page {
   opacity: 0.9;
 }
 
-/* 日期选择器 - 极致缩小，与筛选项高度一致 */
+/* 日期选择器 */
 .date-picker {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* 匹配筛选项的内边距和高度 */
   padding: clamp(2px, calc(100vw / 375 * 4), 6px) clamp(8px, calc(100vw / 375 * 10), 12px);
   background-color: #fff;
   border-radius: clamp(16px, calc(100vw / 375 * 20), 24px);
   font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
   color: #666;
-  /* 极致缩小日期框宽度 */
   min-width: clamp(80px, calc(100vw / 375 * 80), 30px);
   max-width: clamp(120px, calc(100vw / 375 * 140), 50px);
   flex-shrink: 0;
   line-height: 1.4;
-  /* 固定高度，强制与标签、筛选项对齐 */
   height: clamp(28px, calc(100vw / 375 * 32), 36px);
 }
 .arrow-icon {
@@ -207,7 +194,8 @@ page {
 /* 次品卡片 */
 .defective-card {
   padding: clamp(16px, calc(100vw / 375 * 20), 24px) 0;
-  border-bottom: 1px solid #f9f9f9;
+  border-bottom: 1px solid #8a8a8a;
+  
   box-sizing: border-box;
   touch-action: auto;
 }
@@ -248,75 +236,73 @@ page {
   background-color: #52C41A;
 }
 
-/* 信息组 */
+/* ================= 终极修复：绝对对齐的 Flex 表格布局 ================= */
 .info-group {
-  margin-bottom: clamp(12px, calc(100vw / 375 * 16), 20px);
-  width: 100%;
-  box-sizing: border-box;
-}
-.info-line {
   display: flex;
-  align-items: center;
-  margin-bottom: clamp(6px, calc(100vw / 375 * 8), 10px);
+  flex-wrap: wrap; /* 允许换行，形成两列 */
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px; /* 行间距 */
+  box-sizing: border-box;
   font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
-  flex-wrap: wrap;
-  row-gap: clamp(2px, calc(100vw / 375 * 4), 6px);
-  column-gap: clamp(6px, calc(100vw / 375 * 8), 10px);
 }
-.info-label {
+
+/* 控制列宽：全屏和半屏 */
+.info-item.full {
+  width: 100%;
+}
+.info-item.half {
+  width: 50%;
+  padding-right: 4px; /* 防止左右两列文字粘连 */
+}
+
+/* 🔥核心：统一所有左侧标签的宽度（5.5个字宽正好放下"关联订单："） */
+.info-label, .desc-title, .process-label {
   color: #666;
-  min-width: clamp(60px, calc(100vw / 375 * 70), 80px);
+  width: 5.5em; 
   flex-shrink: 0;
+  text-align: left;
+  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
 }
-.info-value {
+
+/* 右侧值的样式 */
+.info-value, .process-value {
   color: #333;
   font-weight: 500;
+  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100% - clamp(68px, calc(100vw / 375 * 80), 90px));
-}
-.ml-12 {
-  margin-left: clamp(8px, calc(100vw / 375 * 12), 16px);
 }
 
-/* 次品描述 */
+/* 描述模块改为 Flex 配合对齐 */
 .desc-box {
-  margin-bottom: clamp(12px, calc(100vw / 375 * 16), 20px);
-}
-.desc-title {
-  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
-  color: #666;
-  display: block;
-  margin-bottom: clamp(4px, calc(100vw / 375 * 6), 8px);
+  display: flex;
+  margin-bottom: 12px;
 }
 .desc-content {
-  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
   color: #333;
+  flex: 1;
+  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
   line-height: 1.5;
-  word-wrap: break-word;
+  word-wrap: break-word; /* 允许描述长文本换行 */
 }
 
-/* 处理状态 */
+/* 处理状态容器 */
 .process-status {
   display: flex;
   align-items: center;
-  margin-bottom: clamp(8px, calc(100vw / 375 * 12), 16px);
+  margin-bottom: 12px;
 }
-.process-label {
-  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
-  color: #666;
-  min-width: clamp(60px, calc(100vw / 375 * 70), 80px);
-}
-.process-value {
-  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
-}
-.process-value.success {
-  color: #52C41A;
-}
-.process-value.pending {
-  color: #faad14;
-}
+.process-value.success { color: #52C41A; }
+.process-value.pending { color: #faad14; }
+
+/* ===================================================================== */
 
 /* 操作按钮 */
 .defective-action {
@@ -329,6 +315,7 @@ page {
   border-radius: clamp(6px, calc(100vw / 375 * 8), 10px);
   font-size: clamp(12px, calc(100vw / 375 * 14), 16px);
   padding: clamp(4px, calc(100vw / 375 * 6), 8px) clamp(10px, calc(100vw / 375 * 12), 14px);
+  margin: 0; /* 清除默认边距 */
 }
 .edit-btn {
   background-color: #f5f5f5;
@@ -340,114 +327,127 @@ page {
 }
 
 /* 弹窗样式 */
+/* --- 弹窗基础布局 --- */
 .modal-mask {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  box-sizing: border-box;
-  min-height: 100vh;
 }
+
 .modal-content {
-  width: clamp(280px, 80%, 360px);
-  max-width: calc(100vw - 40px);
+  width: 85%;
+  max-width: 600rpx;
   background-color: #fff;
-  border-radius: clamp(12px, calc(100vw / 375 * 16), 20px);
-  padding: clamp(20px, calc(100vw / 375 * 24), 28px);
+  border-radius: 24rpx;
+  padding: 40rpx 30rpx;
   box-sizing: border-box;
-  min-width: 260px;
 }
-.modal-title {
-  font-size: clamp(16px, calc(100vw / 375 * 18), 20px);
-  font-weight: 600;
-  color: #333;
-  text-align: center;
-  margin-bottom: clamp(16px, calc(100vw / 375 * 20), 24px);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.modal-form {
-  margin-bottom: clamp(20px, calc(100vw / 375 * 24), 28px);
-}
+
+/* --- 表单项对齐修复 --- */
 .form-item {
-  margin-bottom: clamp(10px, calc(100vw / 375 * 12), 14px);
-  width: 100%;
+  display: flex;
+  align-items: center; /* 确保标签和输入框垂直居中对齐 */
+  margin-bottom: 24rpx;
 }
+
+.form-item-vertical {
+  display: flex;
+  flex-direction: column; /* 描述框改为上下结构，防止左右挤压 */
+  margin-bottom: 24rpx;
+}
+
+/* 🔥 关键修复：统一标签宽度，防止截断 */
 .form-label {
-  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
+  font-size: 28rpx;
   color: #666;
-  display: block;
-  margin-bottom: clamp(4px, calc(100vw / 375 * 6), 8px);
+  width: 180rpx; /* 固定宽度，确保冒号对齐 */
+  flex-shrink: 0; /* 禁止缩小，保护文字不被截断 */
 }
-/* 必填标记样式 */
+
 .required {
   color: #ff4d4f;
-  margin-left: 2px;
+  margin-left: 4rpx;
 }
-.form-input, .form-textarea {
-  width: 100%;
-  padding: clamp(8px, calc(100vw / 375 * 10), 12px) clamp(10px, calc(100vw / 375 * 12), 14px);
-  border: 1px solid #f0f0f0;
-  border-radius: clamp(6px, calc(100vw / 375 * 8), 10px);
-  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
+
+/* --- 输入控件样式优化 --- */
+.form-input, .form-picker-wrapper {
+  flex: 1; /* 占据剩余全部宽度 */
+  min-width: 0; /* 允许在flex容器中正常缩小 */
+}
+
+.form-input {
+  height: 80rpx;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
   color: #333;
-  box-sizing: border-box;
 }
-.form-textarea {
-  min-height: clamp(80px, calc(100vw / 375 * 100), 120px);
-  resize: none;
-  line-height: 1.5;
-}
+
 .form-picker {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: clamp(8px, calc(100vw / 375 * 10), 12px) clamp(10px, calc(100vw / 375 * 12), 14px);
-  border: 1px solid #f0f0f0;
-  border-radius: clamp(6px, calc(100vw / 375 * 8), 10px);
-  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
+  height: 80rpx;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
   color: #333;
 }
-.modal-info {
-  margin-bottom: clamp(20px, calc(100vw / 375 * 24), 28px);
+
+.form-textarea {
+  width: 100%;
+  height: 180rpx;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  margin-top: 12rpx;
+  box-sizing: border-box;
 }
-.info-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: clamp(10px, calc(100vw / 375 * 12), 14px);
-  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
-  flex-wrap: wrap;
-  row-gap: clamp(2px, calc(100vw / 375 * 4), 6px);
+
+.arrow-icon {
+  width: 24rpx;
+  height: 24rpx;
 }
+
+/* --- 按钮样式 --- */
 .modal-actions {
   display: flex;
-  gap: clamp(10px, calc(100vw / 375 * 12), 14px);
-  width: 100%;
+  gap: 20rpx;
+  margin-top: 40rpx;
 }
+
 .modal-btn {
   flex: 1;
-  height: clamp(36px, calc(100vw / 375 * 44), 48px);
-  line-height: clamp(36px, calc(100vw / 375 * 44), 48px);
-  border-radius: clamp(6px, calc(100vw / 375 * 8), 10px);
-  font-size: clamp(14px, calc(100vw / 375 * 16), 18px);
+  /* 关键：高度与行高保持一致，实现单行文字竖直居中 */
+  height: 88rpx; 
+  line-height: 88rpx; 
+  
+  /* 辅助方案：使用 flex 布局确保万无一失 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  border-radius: 12rpx;
+  font-size: 30rpx;
   border: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  touch-action: manipulation;
+  font-weight: 500;
+  padding: 0; /* 清除可能存在的默认内边距 */
+  margin: 0;
 }
+
 .cancel-btn {
   background-color: #f5f5f5;
   color: #666;
 }
+
 .confirm-btn {
   background: linear-gradient(90deg, #F5A623, #FFB84D);
   color: #fff;
@@ -519,7 +519,14 @@ page {
     min-height: clamp(140px, calc(100vw / 375 * 160), 180px);
   }
 }
+.defective-card:first-child {
+  padding-top: 0;
+}
 
+.defective-card:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
 /* 横屏适配 */
 @media (orientation: landscape) {
   .scroll-container {
@@ -529,6 +536,7 @@ page {
   }
   .defective-section {
     min-height: auto;
+    
   }
   .defective-section.empty-section {
     min-height: calc(100vh - 160px);
