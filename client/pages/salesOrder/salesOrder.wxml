@@ -34,6 +34,12 @@
               <text class="info-label">客户：</text>
               <text class="info-value font-bold">{{item.customerName}}</text>
             </view>
+            
+            <view class="info-line">
+              <text class="info-label">项目：</text>
+              <text class="info-value">{{item.projectName || '暂无项目'}}</text>
+            </view>
+
             <view class="info-line">
               <text class="info-label">商品：</text>
               <text class="info-value">{{item.goodsDesc}}</text>
@@ -67,5 +73,5 @@
         </view>
       </block>
     </view>
-    </scroll-view>
+  </scroll-view>
 </view>

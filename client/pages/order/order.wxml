@@ -38,6 +38,11 @@
 
             <view class="info-group">
               <view class="info-line">
+                <text class="info-label">合作项目：</text>
+                <text class="info-value">{{item.projectName || '暂无项目'}}</text>
+              </view>
+              
+              <view class="info-line">
                 <text class="info-label">型号：</text>
                 <text class="info-value">{{item.model}}</text>
                 <text class="info-label ml-12">面料：</text>
@@ -99,6 +104,10 @@
       <view class="info-row">
         <text class="info-label">订单：</text>
         <text class="info-value">{{currentOrder.orderId}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">项目：</text>
+        <text class="info-value">{{currentOrder.projectName || '暂无项目'}}</text>
       </view>
       <view class="info-row">
         <text class="info-label">型号：</text>
