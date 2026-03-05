@@ -1,6 +1,5 @@
 <scroll-view class="scroll-container" scroll-y>
   <view class="container">
-    <!-- 顶部导航 -->
     <view class="top-nav">
       <view class="nav-back" bindtap="handleBack">
         <image class="back-icon" src="/images/back.png"></image>
@@ -11,7 +10,6 @@
       </view>
     </view>
 
-    <!-- 库存概览 -->
     <view class="inventory-overview">
       <view class="overview-title">库存概览</view>
       <view class="overview-stats">
@@ -34,9 +32,7 @@
       </view>
     </view>
 
-    <!-- 快捷操作 -->
     <view class="quick-actions">
-      <!-- 手动入库 -->
       <view class="action-item" bindtap="handleAddCloth">
         <image class="action-icon" src="/images/hand.png"></image>
         <text class="action-text">手动入库</text>
@@ -51,7 +47,6 @@
       </view>
     </view>
 
-    <!-- 最近操作记录 -->
     <view class="record-section">
       <view class="section-title">
         <text>最近操作</text>
@@ -60,20 +55,18 @@
 
       <view class="record-list">
         <view class="record-header">
-          <text class="header-col time-col">时间</text>
-          <text class="header-col type-col">类型</text>
-          <text class="header-col model-col">型号</text>
-          <text class="header-col meter-col">米数</text>
+          <view class="header-col time-col">时间</view>
+          <view class="header-col type-col">类型</view>
+          <view class="header-col model-col">型号</view>
+          <view class="header-col meter-col">米数</view>
         </view>
 
         <block wx:for="{{recordList}}" wx:key="id">
           <view class="record-item">
-            <text class="record-col time-col">{{item.time}}</text>
-            <text class="record-col type-col {{item.type === 'in' ? 'type-in' : 'type-out'}}">
-              {{item.type === 'in' ? '入库' : '出库'}}
-            </text>
-            <text class="record-col model-col">{{item.model}}</text>
-            <text class="record-col meter-col">{{item.meters}}m</text>
+            <view class="record-col time-col">{{item.time}}</view>
+            <view class="record-col type-col {{item.type === 'in' ? 'type-in' : 'type-out'}}">{{item.type === 'in' ? '入库' : '出库'}}</view>
+            <view class="record-col model-col">{{item.model}}</view>
+            <view class="record-col meter-col">{{item.meters}}m</view>
           </view>
         </block>
       </view>
@@ -81,7 +74,6 @@
   </view>
 </scroll-view>
 
-<!-- 原有弹窗：扫码出入库 -->
 <view class="modal-mask" wx:if="{{showClothModal}}" bindtap="hideClothModal">
   <view class="modal-content" catchtap="stopPropagation">
     <view class="modal-title">布匹信息</view>
@@ -108,41 +100,31 @@
   </view>
 </view>
 
-<!-- 手动入库弹窗 -->
 <view class="modal-mask" wx:if="{{showAddClothModal}}" bindtap="hideAddClothModal">
-  <view class="modal-content" catchtap="stopPropagation" style="max-height: 80vh; overflow-y: auto;">
+  <view class="modal-content add-cloth-modal" catchtap="stopPropagation">
     <view class="modal-title">新增布匹入库</view>
 
-    <!-- 型号搜索选择 -->
     <view class="info-row">
       <text>型号：</text>
-      <input type="text" bindinput="onModelSearch" bindfocus="showModelList" placeholder="请输入"
-        value="{{clothForm.model}}" />
-      <!-- 型号下拉列表 -->
+      <input type="text" bindinput="onModelSearch" bindfocus="showModelList" placeholder="请输入" value="{{clothForm.model}}" />
       <view class="model-list" wx:if="{{showModelList && (modelOptions.length > 0 || clothForm.model.trim() !== '')}}">
         <view class="model-item" wx:for="{{modelOptions}}" wx:key="index" bindtap="chooseModel" data-model="{{item}}">
           {{item}}
         </view>
-        <view class="model-item create-item" wx:if="{{modelOptions.length === 0 && clothForm.model.trim() !== ''}}"
-          bindtap="createModel">
+        <view class="model-item create-item" wx:if="{{modelOptions.length === 0 && clothForm.model.trim() !== ''}}" bindtap="createModel">
           新建型号：{{clothForm.model}}
         </view>
       </view>
     </view>
 
-    <!-- 米数输入 -->
     <view class="info-row">
       <text>米数：</text>
-      <input type="digit" bindinput="onFormInput" data-field="meters" placeholder="请输入入库米数"
-        value="{{clothForm.meters}}" />
+      <input type="digit" bindinput="onFormInput" data-field="meters" placeholder="请输入入库米数" value="{{clothForm.meters}}" />
     </view>
 
-    <!-- 门幅选择（关联型号） -->
     <view class="info-row">
       <text>门幅：</text>
-      <input type="text" bindinput="onWidthInput" bindfocus="showWidthList" placeholder="请输入"
-        value="{{clothForm.width}}" readonly="{{!!clothForm.width && modelHasWidth}}" />
-      <!-- 门幅下拉列表（仅显示当前型号的门幅） -->
+      <input type="text" bindinput="onWidthInput" bindfocus="showWidthList" placeholder="请输入" value="{{clothForm.width}}" readonly="{{!!clothForm.width && modelHasWidth}}" />
       <view class="model-list" wx:if="{{showWidthList && widthOptions.length > 0}}">
         <view class="model-item" wx:for="{{widthOptions}}" wx:key="index" bindtap="chooseWidth" data-width="{{item}}">
           {{item}}
@@ -157,7 +139,6 @@
   </view>
 </view>
 
-<!-- 打印选择弹窗 -->
 <view class="modal-mask" wx:if="{{showPrintModal}}" bindtap="hidePrintModal">
   <view class="modal-content" catchtap="stopPropagation">
     <view class="modal-title">选择打印方式</view>
