@@ -22,6 +22,10 @@
         <text class="status-tag {{statusClass}}">{{statusMap[orderDetail.status]}}</text>
       </view>
       <view class="info-row">
+        <text class="info-label">项目：</text>
+        <text class="info-value">{{currentOrder.projectName || '暂无项目'}}</text>
+      </view>
+      <view class="info-row">
         <text class="label">创建时间：</text>
         <text class="value">{{orderDetail.createTime || '2026-02-12 10:30:00'}}</text>
       </view>

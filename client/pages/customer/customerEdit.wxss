@@ -1,0 +1,63 @@
+.container {
+  padding: 30rpx;
+  background: #f8f8f8;
+  min-height: 100vh;
+}
+
+.section {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.label {
+  width: 160rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.add-btn {
+  color: #07c160;
+  font-size: 28rpx;
+}
+
+.contact-group {
+  background: #fafafa;
+  padding: 10rpx;
+  margin-top: 10rpx;
+  border-radius: 8rpx;
+}
+
+.submit-btn {
+  margin-top: 50rpx;
+  width: 100%;
+  border-radius: 44rpx;
+}
+
+.picker {
+  font-size: 28rpx;
+  color: #333;
+}

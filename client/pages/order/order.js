@@ -4,6 +4,7 @@ Page({
    */
   data: {
     // 筛选相关
+    scrollTop: 0,
     currentFilter: 'all',
     filterList: [
       { key: 'all', label: '全部' },
@@ -111,7 +112,8 @@ Page({
 
     this.setData({
       currentFilter: filterKey,
-      filteredOrderList: filteredList
+      filteredOrderList: filteredList,
+      scrollTop: 0
     });
   },
 
