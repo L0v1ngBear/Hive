@@ -3,7 +3,6 @@ package my.hive_back.module.tenant.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
-import my.hive_back.module.tenant.TenantStatusEnum;
 import my.hive_back.module.tenant.mapper.TenantMapper;
 import my.hive_back.module.tenant.model.dto.TenantInfoPageRequest;
 import my.hive_back.module.tenant.model.entity.Tenant;
@@ -16,6 +15,7 @@ public class TenantService implements TenantServiceImpl {
     @Resource
     private TenantMapper tenantMapper;
 
+    @Override
     public Page<Tenant> pageSearchTenant(TenantInfoPageRequest searchDTO) {
         Integer status = searchDTO.getStatus();
         Integer isDeleted = searchDTO.getIsDeleted();
