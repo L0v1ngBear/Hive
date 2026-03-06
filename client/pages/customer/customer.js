@@ -10,6 +10,15 @@ Page({
     this.fetchCustomerList();
   },
 
+  /**
+   * 返回上一页
+   */
+  handleBack() {
+    wx.navigateBack({
+      delta: 1
+    });
+  },
+
   // 获取全部客户数据
   async fetchCustomerList() {
     wx.showLoading({ title: '加载中...' });

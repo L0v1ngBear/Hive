@@ -23,7 +23,7 @@ page {
 .container {
   width: 100%;
   min-height: 100%; /* 确保容器至少与屏幕等高 */
-  padding: 0 12px;
+  padding: 45px 12px;
   padding-bottom: 20px;
   box-sizing: border-box;
   display: flex;
@@ -380,10 +380,12 @@ page {
 }
 .modal-btn, .btn, .print-btn {
   flex: 1;
+  padding: 0; /* 必须强制清空小程序的默认 padding */
+  margin: 0;  /* 清除默认 margin 防止 flex 计算偏差 */
   height: 84rpx;
   line-height: 84rpx;
   border-radius: 12rpx;
-  font-size: 30rpx;
+  font-size: 35rpx;
   border: none;
   font-weight: 500;
 }

@@ -6,7 +6,14 @@ Page({
     typeIndex: 0,
     contacts: [{ name: '', phone: '' }] // 初始一个联系人
   },
-
+  /**
+   * 返回上一页
+   */
+  handleBack() {
+    wx.navigateBack({
+      delta: 1
+    });
+  },
   onLoad(options) {
     if (options.id) {
       this.setData({ isEdit: true });

@@ -1,4 +1,12 @@
 <view class="container">
+  <view class="header-wrapper">
+    <view class="nav-bar">
+      <view class="nav-back" bindtap="handleBack">
+        <image class="back-icon" src="/images/back.png"></image>
+      </view>
+      <view class="nav-title">新增客户</view>
+      <view class="nav-right-placeholder"></view> </view>
+  </view>
   <form bindsubmit="handleFormSubmit">
     <view class="section">
       <view class="section-title">基础信息</view>
