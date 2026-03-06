@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import my.hive_back.common.dto.ResultDTO;
 import my.hive_back.module.order.mapper.SalesOrderMapper;
-import my.hive_back.module.order.model.SalesOrder;
+import my.hive_back.module.order.model.entity.SalesOrder;
 import my.hive_back.module.order.model.dto.SalesOrderListRequest;
 import my.hive_back.module.order.service.impl.SalesOrderServiceImpl;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package my.hive_back.module.order.model;
+package my.hive_back.module.order.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
