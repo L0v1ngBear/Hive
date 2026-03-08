@@ -20,8 +20,8 @@
     "localPlugins": false,
     "disableUseStrict": false,
     "condition": false,
-    "swc": false,
-    "disableSWC": true
+    "swc": true,
+    "disableSWC": false
   },
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
