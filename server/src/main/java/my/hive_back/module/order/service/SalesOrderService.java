@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import my.hive_back.common.context.TenantContextHolder;
-import my.hive_back.common.dto.ResultDTO;
 import my.hive_back.module.order.mapper.SalesOrderMapper;
-import my.hive_back.module.order.model.dto.SalesOrderStatusRequest;
 import my.hive_back.module.order.model.entity.SalesOrder;
 import my.hive_back.module.order.model.dto.SalesOrderListRequest;
 import my.hive_back.module.order.service.impl.SalesOrderServiceImpl;
@@ -44,7 +42,7 @@ public class SalesOrderService implements SalesOrderServiceImpl {
         return salesOrderMapper.selectOne(queryWrapper);
     }
 
-    public int updateOrderStatus(SalesOrder order, SalesOrderStatusRequest request) {
-        return salesOrderMapper.updateStatus(order, request);
+    public int updateOrderStatus(SalesOrder order, String oldStatus) {
+        return salesOrderMapper.updateStatus(order, oldStatus);
     }
 }

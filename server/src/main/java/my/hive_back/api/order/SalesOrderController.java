@@ -12,6 +12,7 @@ import my.hive_back.module.order.model.dto.SalesOrderListRequest;
 import my.hive_back.module.order.model.vo.SalesOrderListVO;
 import my.hive_back.module.order.model.vo.SalesOrderStatusVO;
 import my.hive_back.module.order.service.SalesOrderService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class SalesOrderController {
     @Resource
     private SalesOrderService salesOrderService;
 
-    @GetMapping("/orders")
+    @GetMapping("/orders/list")
     public ResultDTO<PageResultVo<SalesOrderListVO>> selectSalesOrder(@RequestParam SalesOrderListRequest request) {
         Page<SalesOrder> page = salesOrderService.selectSalesOrder(request);
         PageResultVo<SalesOrderListVO> pageResultVo = new PageResultVo<>() {
@@ -38,6 +39,19 @@ public class SalesOrderController {
             }
         };
         return ResultDTO.success(pageResultVo);
+    }
+
+    @GetMapping("/orders/{orderId}")
+    public ResultDTO<SalesOrderStatusVO> getSalesOrderStatus(@PathVariable("orderId") String orderId) {
+        // 查询订单状态
+        SalesOrder order = salesOrderService.getByIdandTenantId(orderId);
+        if (order == null) {
+            return ResultDTO.fail(404, "订单不存在");
+        }
+        // copy属性
+        SalesOrderStatusVO statusVO = new SalesOrderStatusVO();
+        BeanUtils.copyProperties(order, statusVO);
+        return ResultDTO.success(statusVO);
     }
 
     @PostMapping("/orders/{orderId}/status")
@@ -55,6 +69,7 @@ public class SalesOrderController {
         }
 
         // 查询订单是否存在
+        // for update 加行锁，防止并发更新
         SalesOrder order = salesOrderService.getByIdandTenantId(orderId);
         if (order == null) {
             return ResultDTO.fail(404, "订单不存在");
@@ -68,8 +83,20 @@ public class SalesOrderController {
         }
 
         // 更新订单状态
-        salesOrderService.updateOrderStatus(order, request);
+        // 乐观锁控制
+        order.setStatus(newStatus);
+        order.setExpressCompany(request.getExpressInfo().getExpressCompany());
+        order.setExpressNo(request.getExpressInfo().getExpressNo());
+        salesOrderService.updateOrderStatus(order, oldStatus);
+
+        // copy属性
+        SalesOrderStatusVO vo = new SalesOrderStatusVO();
+        BeanUtils.copyProperties(order, vo);
+
+        // 返回更新后的订单状态
+        return ResultDTO.success(vo);
     }
+
 
     private boolean isValidStatusTransition(SalesOrderStatusEnum oldStatus, String newStatus) {
         return switch (oldStatus) {
