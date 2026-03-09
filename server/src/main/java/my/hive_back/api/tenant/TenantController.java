@@ -6,7 +6,7 @@ import my.hive_back.common.dto.PageResultVo;
 import my.hive_back.common.dto.ResultDTO;
 import my.hive_back.module.tenant.model.dto.TenantInfoPageRequest;
 import my.hive_back.module.tenant.model.entity.Tenant;
-import my.hive_back.module.tenant.model.vo.TenantVo;
+import my.hive_back.module.tenant.model.vo.TenantVO;
 import my.hive_back.module.tenant.service.TenantService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,19 +25,19 @@ public class TenantController {
     private TenantService tenantService;
 
     @GetMapping("/page-search")
-    public ResultDTO<PageResultVo<TenantVo>> pageSearchTenant(@Valid @RequestBody TenantInfoPageRequest searchDTO) {
+    public ResultDTO<PageResultVo<TenantVO>> pageSearchTenant(@Valid @RequestBody TenantInfoPageRequest searchDTO) {
 
         Page<Tenant> tenantPage = Optional.ofNullable(tenantService.pageSearchTenant(searchDTO))
                 .orElse(new Page<>()); // 若返回null，初始化空分页对象
 
-        PageResultVo<TenantVo> tenantVoPage = new PageResultVo<>() {{
+        PageResultVo<TenantVO> tenantVoPage = new PageResultVo<>() {{
             // 复制分页核心参数（初始化块简化setter调用）
             setCurrent(tenantPage.getCurrent());
             setSize(tenantPage.getSize());
             setTotal(tenantPage.getTotal());
             setPages(tenantPage.getPages());
             setData(tenantPage.getRecords().stream()
-                    .map(TenantVo::new)
+                    .map(TenantVO::new)
                     .collect(Collectors.toList()));
         }};
 

@@ -4,7 +4,7 @@ import lombok.Data;
 import my.hive_back.module.tenant.model.entity.Tenant;
 
 @Data
-public class TenantVo {
+public class TenantVO {
 
     private Long id;
 
@@ -13,7 +13,7 @@ public class TenantVo {
     private String contactPerson;
     private String contactPhone;
 
-    public TenantVo(Tenant tenant) {
+    public TenantVO(Tenant tenant) {
         this.id = tenant.getId();
         this.tenantName = tenant.getTenantName();
         this.status = tenant.getStatus();

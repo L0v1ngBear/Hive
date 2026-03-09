@@ -17,6 +17,8 @@ public class SalesOrder {
     @TableId(type = IdType.INPUT) // 订单号手动生成，不使用自增
     private String orderId;
 
+    private Long tenantId;
+
     /**
      * 订单状态
      * pending_pay: 待收款
