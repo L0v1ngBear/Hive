@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
-@Controller
+@RestController
 @RequestMapping("/sales")
 public class SalesOrderController {
 
@@ -35,7 +35,11 @@ public class SalesOrderController {
                 setSize(page.getSize());
                 setTotal(page.getTotal());
                 setPages(page.getPages());
-                setData(page.getRecords().stream().map(SalesOrderListVO::new).toList());
+                setData(page.getRecords().stream().map(order -> {
+                    SalesOrderListVO vo = new SalesOrderListVO();
+                    BeanUtils.copyProperties(order, vo);
+                    return vo;
+                }).toList());
             }
         };
         return ResultDTO.success(pageResultVo);

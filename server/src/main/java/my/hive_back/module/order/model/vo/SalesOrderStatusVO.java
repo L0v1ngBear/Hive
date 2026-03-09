@@ -3,7 +3,6 @@ package my.hive_back.module.order.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
-import my.hive_back.module.order.model.entity.SalesOrder;
 
 
 import java.math.BigDecimal;
