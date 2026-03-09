@@ -98,6 +98,23 @@ public class SalesOrderController {
     }
 
 
+    @GetMapping("/orders/expressInfo/{orderId}")
+    public ResultDTO<SalesOrderStatusVO> getSalesOrderExpressInfo(@PathVariable("orderId") String orderId) {
+        // 查询订单状态
+        SalesOrder order = salesOrderService.getByIdandTenantId(orderId);
+        if (order == null) {
+            return ResultDTO.fail(404, "订单不存在");
+        }
+        String expressCompany = order.getExpressCompany();
+        String expressNo = order.getExpressNo();
+
+        //TODO 对接物流信息接口
+
+        // copy属性
+        SalesOrderStatusVO statusVO = new SalesOrderStatusVO();
+        BeanUtils.copyProperties(order, statusVO);
+        return ResultDTO.success(statusVO);
+    }
     private boolean isValidStatusTransition(SalesOrderStatusEnum oldStatus, String newStatus) {
         return switch (oldStatus) {
             case PENDING_PAYMENT -> SalesOrderStatusEnum.PENDING_SHIPMENT.getName().equals(newStatus);
