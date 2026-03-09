@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+
 import java.util.Date;
 
 /**
  * 生产订单状态变更日志实体类
- *
  */
 @Data
 @TableName("production_order_status_log")
@@ -20,6 +20,9 @@ public class ProductionOrderStatusLog {
      */
     @TableId(type = IdType.AUTO)
     private Long id;
+
+    @TableField("tenant_id")
+    private Long tenantId;
 
     /**
      * 生产订单编号
