@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -47,7 +49,7 @@ public class ProductionOrderProcessLog {
      * 工序完成时间
      */
     @TableField("complete_time")
-    private Date completeTime;
+    private LocalDateTime completeTime;
 
     /**
      * 工序备注

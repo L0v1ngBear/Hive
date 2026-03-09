@@ -28,17 +28,12 @@ public class ProductionOrder {
     @TableField("order_id")
     private String orderId;
 
+
     /**
-     * 订单状态：pending_confirm-待确认，pending_material-备料中，producing-生产中，pending_ship-待发货，completed-已完成
+     * 订单状态：OrderStatusEnum pending_confirm-待确认，pending_material-备料中，producing-生产中，pending_ship-待发货，shipped-已发货，completed-已完成
      */
     @TableField("status")
     private String status;
-
-    /**
-     * 状态索引（0-待确认，1-备料中，2-生产中，3-待发货，4-已完成）
-     */
-    @TableField("status_index")
-    private Integer statusIndex;
 
     /**
      * 面料型号（如T800-210）
@@ -89,7 +84,7 @@ public class ProductionOrder {
     private BigDecimal totalAmount;
 
     /**
-     * 当前生产工序：0-整经，1-浆纱，2-织造，3-验布，4-卷布
+     * 当前生产工序：ProductionProcessEnum 0-整经，1-浆纱，2-织造，3-验布，4-卷布
      */
     @TableField("process")
     private Integer process;
@@ -97,8 +92,17 @@ public class ProductionOrder {
     /**
      * 客户名称
      */
+    @TableField("customer_id")
+    private String customerId;
+
     @TableField("customer_name")
     private String customerName;
+
+    @TableField("project_name")
+    private String projectName;
+
+    @TableField("contactPhone")
+    private String contactPhone;
 
     /**
      * 预计交付日期

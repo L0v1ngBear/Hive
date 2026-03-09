@@ -22,7 +22,7 @@ public class SalesOrderService implements SalesOrderServiceImpl {
         LambdaQueryWrapper<SalesOrder> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SalesOrder::getStatus, request.getStatus());
 
-        // 数据量大时模糊查询瓶颈
+        // TODO数据量大时模糊查询瓶颈
         queryWrapper.like(SalesOrder::getOrderId, request.getKeyWord());
         queryWrapper.like(SalesOrder::getCustomerName, request.getKeyWord());
         queryWrapper.orderByDesc(SalesOrder::getCreateTime);

@@ -3,9 +3,9 @@ package my.hive_back.api.order;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import my.hive_back.common.dto.PageResultVo;
+import my.hive_back.common.dto.PageResultVO;
 import my.hive_back.common.dto.ResultDTO;
-import my.hive_back.module.order.SalesOrderStatusEnum;
+import my.hive_back.module.order.OrderStatusEnum;
 import my.hive_back.module.order.model.dto.SalesOrderStatusRequest;
 import my.hive_back.module.order.model.entity.SalesOrder;
 import my.hive_back.module.order.model.dto.SalesOrderListRequest;
@@ -13,11 +13,8 @@ import my.hive_back.module.order.model.vo.SalesOrderListVO;
 import my.hive_back.module.order.model.vo.SalesOrderStatusVO;
 import my.hive_back.module.order.service.SalesOrderService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/sales")
@@ -27,9 +24,9 @@ public class SalesOrderController {
     private SalesOrderService salesOrderService;
 
     @GetMapping("/orders/list")
-    public ResultDTO<PageResultVo<SalesOrderListVO>> selectSalesOrder(@RequestParam SalesOrderListRequest request) {
+    public ResultDTO<PageResultVO<SalesOrderListVO>> selectSalesOrder(@RequestParam SalesOrderListRequest request) {
         Page<SalesOrder> page = salesOrderService.selectSalesOrder(request);
-        PageResultVo<SalesOrderListVO> pageResultVo = new PageResultVo<>() {
+        PageResultVO<SalesOrderListVO> pageResultVo = new PageResultVO<>() {
             {
                 setCurrent(page.getCurrent());
                 setSize(page.getSize());
@@ -64,7 +61,7 @@ public class SalesOrderController {
                                                            @Valid @RequestBody SalesOrderStatusRequest request) {
 
         // 校验已发货订单是否提供物流信息
-        if (SalesOrderStatusEnum.SHIPPED.getName().equals(request.getStatus())) {
+        if (OrderStatusEnum.SHIPPED.getName().equals(request.getStatus())) {
             if (request.getExpressInfo() == null ||
                     request.getExpressInfo().getExpressCompany().isBlank() ||
                     request.getExpressInfo().getExpressNo().isBlank()) {
@@ -82,7 +79,7 @@ public class SalesOrderController {
         // 校验订单状态转换是否有效
         String oldStatus = order.getStatus();
         String newStatus = request.getStatus();
-        if (!isValidStatusTransition(Objects.requireNonNull(SalesOrderStatusEnum.getByName(oldStatus)), newStatus)) {
+        if (!OrderStatusEnum.canFlowTo(oldStatus, newStatus)) {
             return ResultDTO.fail(401, "订单状态转换无效");
         }
 
@@ -118,13 +115,5 @@ public class SalesOrderController {
         SalesOrderStatusVO statusVO = new SalesOrderStatusVO();
         BeanUtils.copyProperties(order, statusVO);
         return ResultDTO.success(statusVO);
-    }
-    private boolean isValidStatusTransition(SalesOrderStatusEnum oldStatus, String newStatus) {
-        return switch (oldStatus) {
-            case PENDING_PAYMENT -> SalesOrderStatusEnum.PENDING_SHIPMENT.getName().equals(newStatus);
-            case PENDING_SHIPMENT -> SalesOrderStatusEnum.SHIPPED.getName().equals(newStatus);
-            case SHIPPED -> SalesOrderStatusEnum.COMPLETED.getName().equals(newStatus);
-            default -> false;
-        };
     }
 }

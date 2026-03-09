@@ -2,7 +2,7 @@ package my.hive_back.api.tenant;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
-import my.hive_back.common.dto.PageResultVo;
+import my.hive_back.common.dto.PageResultVO;
 import my.hive_back.common.dto.ResultDTO;
 import my.hive_back.module.tenant.model.dto.TenantInfoPageRequest;
 import my.hive_back.module.tenant.model.entity.Tenant;
@@ -25,12 +25,12 @@ public class TenantController {
     private TenantService tenantService;
 
     @GetMapping("/page-search")
-    public ResultDTO<PageResultVo<TenantVO>> pageSearchTenant(@Valid @RequestBody TenantInfoPageRequest searchDTO) {
+    public ResultDTO<PageResultVO<TenantVO>> pageSearchTenant(@Valid @RequestBody TenantInfoPageRequest searchDTO) {
 
         Page<Tenant> tenantPage = Optional.ofNullable(tenantService.pageSearchTenant(searchDTO))
                 .orElse(new Page<>()); // 若返回null，初始化空分页对象
 
-        PageResultVo<TenantVO> tenantVoPage = new PageResultVo<>() {{
+        PageResultVO<TenantVO> tenantVoPage = new PageResultVO<>() {{
             // 复制分页核心参数（初始化块简化setter调用）
             setCurrent(tenantPage.getCurrent());
             setSize(tenantPage.getSize());
