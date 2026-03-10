@@ -10,7 +10,7 @@ import my.hive_back.module.order.mapper.SalesOrderMapper;
 import my.hive_back.module.order.model.dto.SalesOrderStatusRequest;
 import my.hive_back.module.order.model.entity.SalesOrder;
 import my.hive_back.module.order.model.dto.SalesOrderListRequest;
-import my.hive_back.module.order.model.vo.SalesOrderStatusVO;
+import my.hive_back.module.order.model.vo.SalesOrderVO;
 import my.hive_back.module.order.service.impl.SalesOrderServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -39,7 +39,7 @@ public class SalesOrderService implements SalesOrderServiceImpl {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public SalesOrderStatusVO updateOrderStatus(String orderId, SalesOrderStatusRequest request) {
+    public SalesOrderVO updateOrderStatus(String orderId, SalesOrderStatusRequest request) {
 
         // 校验已发货订单是否提供物流信息
         if (OrderStatusEnum.SHIPPED.getName().equals(request.getStatus())) {
@@ -83,7 +83,7 @@ public class SalesOrderService implements SalesOrderServiceImpl {
         salesOrderMapper.updateStatus(order, oldStatus);
 
         // copy属性
-        SalesOrderStatusVO vo = new SalesOrderStatusVO();
+        SalesOrderVO vo = new SalesOrderVO();
         BeanUtils.copyProperties(order, vo);
 
         // 返回更新后的订单状态

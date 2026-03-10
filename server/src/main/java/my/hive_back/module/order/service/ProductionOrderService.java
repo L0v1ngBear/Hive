@@ -39,9 +39,6 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
      * @return
      */
     public ProductionOrder selectProductionOrderDetail(String orderId) {
-        LambdaQueryWrapper<ProductionOrder> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProductionOrder::getOrderId, orderId);
 
-        return productionOrderMapper.selectOne(queryWrapper);
     }
 }

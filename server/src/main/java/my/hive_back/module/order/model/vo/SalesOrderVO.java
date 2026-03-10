@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class SalesOrderListVO {
+public class SalesOrderVO {
     private String orderId;
     private String status;
     private String customerName;

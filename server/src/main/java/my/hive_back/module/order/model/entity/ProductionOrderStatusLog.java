@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 生产订单状态变更日志实体类
@@ -63,6 +63,6 @@ public class ProductionOrderStatusLog {
     /**
      * 操作时间
      */
-    @TableField("operate_time")
-    private Date operateTime;
+    @TableField("create_time")
+    private LocalDateTime createTime;
 }
