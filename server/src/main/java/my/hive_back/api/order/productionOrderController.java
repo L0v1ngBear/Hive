@@ -9,10 +9,7 @@ import my.hive_back.module.order.model.entity.ProductionOrder;
 import my.hive_back.module.order.model.vo.ProductionOrderListVO;
 import my.hive_back.module.order.service.ProductionOrderService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 
@@ -42,5 +39,15 @@ public class productionOrderController {
             }
         };
         return ResultDTO.success(pageResultVO);
+    }
+
+    @GetMapping("/orders/detail/{orderId}")
+    public ResultDTO<ProductionOrderListVO> getProductionOrderDetail(@PathVariable("orderId") String orderId) {
+
+        //TODO 详情查询
+        ProductionOrder order = productionOrderService.selectProductionOrderDetail(orderId);
+        ProductionOrderListVO vo = new ProductionOrderListVO();
+        BeanUtils.copyProperties(order, vo);
+        return ResultDTO.success(vo);
     }
 }

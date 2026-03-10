@@ -9,10 +9,9 @@ import org.apache.ibatis.annotations.Update;
 public interface SalesOrderMapper extends BaseMapper<SalesOrder> {
 
     @Update("UPDATE sales_order SET status = #{order.status} " +
-            "AND express_company = #{order.expressCompany} " +
+            ",express_company = #{order.expressCompany} " +
             "AND express_no = #{order.expressNo} " +
             "WHERE order_id = #{order.orderId} " +
-            "AND status = #{oldStatus} " +
-            "AND tenant_id = #{TENANTCONTEXTHOLDER.getTenantId()}")
+            "AND status = #{oldStatus} ")
     int updateStatus(SalesOrder order, String oldStatus);
 }

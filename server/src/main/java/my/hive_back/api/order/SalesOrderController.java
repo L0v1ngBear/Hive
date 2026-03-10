@@ -42,7 +42,7 @@ public class SalesOrderController {
         return ResultDTO.success(pageResultVo);
     }
 
-    @GetMapping("/orders/{orderId}")
+    @GetMapping("/orders/detail/{orderId}")
     public ResultDTO<SalesOrderStatusVO> getSalesOrderStatus(@PathVariable("orderId") String orderId) {
         // 查询订单状态
         SalesOrder order = salesOrderService.getByIdandTenantId(orderId);
@@ -55,7 +55,7 @@ public class SalesOrderController {
         return ResultDTO.success(statusVO);
     }
 
-    @PostMapping("/orders/{orderId}/status")
+    @PostMapping("/orders/status/{orderId}")
     @Transactional(rollbackFor = Exception.class)
     public ResultDTO<SalesOrderStatusVO> updateOrderStatus(@PathVariable("orderId") String orderId,
                                                            @Valid @RequestBody SalesOrderStatusRequest request) {
@@ -70,7 +70,6 @@ public class SalesOrderController {
         }
 
         // 查询订单是否存在
-        // for update 加行锁，防止并发更新
         SalesOrder order = salesOrderService.getByIdandTenantId(orderId);
         if (order == null) {
             return ResultDTO.fail(404, "订单不存在");

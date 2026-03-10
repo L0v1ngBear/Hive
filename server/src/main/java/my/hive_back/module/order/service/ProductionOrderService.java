@@ -15,6 +15,11 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
     @Resource
     private ProductionOrderMapper productionOrderMapper;
 
+    /**
+     * 查询生产订单列表
+     * @param request
+     * @return
+     */
     @Override
     public Page<ProductionOrder> selectProductionOrder(ProductionOrderListRequest request) {
 
@@ -26,5 +31,17 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
         queryWrapper.orderByDesc(ProductionOrder::getOrderId);
 
         return productionOrderMapper.selectPage(new Page<>(request.getPageNum(), request.getPageSize()), queryWrapper);
+    }
+
+    /**
+     * 查询生产订单详情
+     * @param orderId
+     * @return
+     */
+    public ProductionOrder selectProductionOrderDetail(String orderId) {
+        LambdaQueryWrapper<ProductionOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductionOrder::getOrderId, orderId);
+
+        return productionOrderMapper.selectOne(queryWrapper);
     }
 }
