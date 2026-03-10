@@ -134,10 +134,4 @@ public class ProductionOrder {
     @TableField(value = "updater", fill = FieldFill.INSERT_UPDATE)
     private String updater;
 
-    /**
-     * 删除标记：0-未删，1-已删
-     */
-    @TableLogic
-    @TableField("is_deleted")
-    private Integer isDeleted;
 }

@@ -2,19 +2,20 @@ package my.hive_back.api.order;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import my.hive_back.common.dto.PageResultVO;
 import my.hive_back.common.dto.ResultDTO;
 import my.hive_back.module.order.model.dto.ProductionOrderListRequest;
 import my.hive_back.module.order.model.entity.ProductionOrder;
+import my.hive_back.module.order.model.entity.ProductionOrderStatusLog;
 import my.hive_back.module.order.model.vo.ProductionOrderVO;
+import my.hive_back.module.order.model.vo.ProductionOrderStatusLogVO;
 import my.hive_back.module.order.service.ProductionOrderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -64,14 +65,23 @@ public class ProductionOrderController {
             @NotBlank(message = "生产订单ID不能为空")
             @PathVariable("orderId") String orderId) {
 
-        //TODO 详情查询
         ProductionOrder order = productionOrderService.selectProductionOrderDetail(orderId);
-        // 补充：空值判断（避免NPE）
-        if (order == null) {
-            return ResultDTO.fail(404, "生产订单不存在");
-        }
         ProductionOrderVO vo = new ProductionOrderVO();
         BeanUtils.copyProperties(order, vo);
         return ResultDTO.success(vo);
+    }
+
+    @GetMapping("/orders/status-log/{orderId}")
+    public ResultDTO<List<ProductionOrderStatusLogVO>> getProductionStatusLog(@NotBlank @PathVariable String orderId) {
+        List<ProductionOrderStatusLog> statusLog = productionOrderService.selectOrderStausLog(orderId);
+
+        List<ProductionOrderStatusLogVO> logVOList = statusLog.stream().map(log ->
+        {
+            ProductionOrderStatusLogVO vo = new ProductionOrderStatusLogVO();
+            BeanUtils.copyProperties(log, vo);
+            return vo;
+        }).toList();
+
+        return ResultDTO.success(logVOList);
     }
 }

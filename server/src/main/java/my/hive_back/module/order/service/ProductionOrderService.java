@@ -3,19 +3,26 @@ package my.hive_back.module.order.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
+import jakarta.validation.constraints.NotBlank;
 import my.hive_back.common.exception.BusinessException;
 import my.hive_back.module.order.mapper.ProductionOrderMapper;
+import my.hive_back.module.order.mapper.ProductionOrderStatusLogMapper;
 import my.hive_back.module.order.model.dto.ProductionOrderListRequest;
 import my.hive_back.module.order.model.entity.ProductionOrder;
-import my.hive_back.module.order.model.vo.ProductionOrderVO;
+import my.hive_back.module.order.model.entity.ProductionOrderStatusLog;
 import my.hive_back.module.order.service.impl.ProductionOrderServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductionOrderService implements ProductionOrderServiceImpl {
 
     @Resource
     private ProductionOrderMapper productionOrderMapper;
+
+    @Resource
+    private ProductionOrderStatusLogMapper statusLogMapper;
 
     /**
      * 查询生产订单列表
@@ -40,9 +47,24 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
      * @param orderId
      * @return
      */
+    @Override
     public ProductionOrder selectProductionOrderDetail(String orderId) {
-        if (orderId == null) {
-            throw new BusinessException(400, "参数不合法");
+
+        ProductionOrder productionOrder = productionOrderMapper.selectById(orderId);
+
+        if (productionOrder == null) {
+            throw new BusinessException(400, "订单不存在");
         }
+
+        return productionOrder;
+    }
+
+    @Override
+    public List<ProductionOrderStatusLog> selectOrderStausLog(@NotBlank String orderId) {
+
+        LambdaQueryWrapper<ProductionOrderStatusLog> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductionOrderStatusLog::getOrderId, orderId);
+        queryWrapper.orderByAsc(ProductionOrderStatusLog::getCreateTime);
+        return statusLogMapper.selectList(queryWrapper);
     }
 }
