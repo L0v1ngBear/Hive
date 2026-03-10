@@ -3,9 +3,11 @@ package my.hive_back.module.order.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
+import my.hive_back.common.exception.BusinessException;
 import my.hive_back.module.order.mapper.ProductionOrderMapper;
 import my.hive_back.module.order.model.dto.ProductionOrderListRequest;
 import my.hive_back.module.order.model.entity.ProductionOrder;
+import my.hive_back.module.order.model.vo.ProductionOrderVO;
 import my.hive_back.module.order.service.impl.ProductionOrderServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,8 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
      * @return
      */
     public ProductionOrder selectProductionOrderDetail(String orderId) {
-
+        if (orderId == null) {
+            throw new BusinessException(400, "参数不合法");
+        }
     }
 }
