@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import my.hive_back.common.annotation.RequirePermission;
 import my.hive_back.common.exception.BusinessException;
 import my.hive_back.module.order.OrderStatusEnum;
 import my.hive_back.module.order.mapper.SalesOrderMapper;
@@ -24,6 +25,7 @@ public class SalesOrderService implements SalesOrderServiceImpl {
     private SalesOrderMapper salesOrderMapper;
 
     @Override
+    @RequirePermission(value = "order:sales:list", message = "您没有权限查询销售订单列表")
     public Page<SalesOrder> selectSalesOrder(SalesOrderListRequest request) {
 
         LambdaQueryWrapper<SalesOrder> queryWrapper = new LambdaQueryWrapper<>();
@@ -39,6 +41,7 @@ public class SalesOrderService implements SalesOrderServiceImpl {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @RequirePermission(value = "order:sales:update", message = "您没有权限更新销售订单状态")
     public SalesOrderVO updateOrderStatus(String orderId, SalesOrderStatusRequest request) {
 
         // 校验已发货订单是否提供物流信息
@@ -91,6 +94,7 @@ public class SalesOrderService implements SalesOrderServiceImpl {
     }
 
     @Override
+    @RequirePermission(value = "order:sales:detail", message = "您没有权限查询销售订单详情")
     public SalesOrder getByIdandTenantId(String orderId) {
         return salesOrderMapper.selectById(orderId);
     }

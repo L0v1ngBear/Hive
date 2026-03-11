@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotBlank;
+import my.hive_back.common.annotation.RequirePermission;
 import my.hive_back.common.exception.BusinessException;
 import my.hive_back.module.order.mapper.ProductionOrderMapper;
 import my.hive_back.module.order.mapper.ProductionOrderStatusLogMapper;
@@ -30,6 +31,7 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
      * @return
      */
     @Override
+    @RequirePermission(value = "order:production:list", message = "您没有权限查询生产订单列表")
     public Page<ProductionOrder> selectProductionOrder(ProductionOrderListRequest request) {
 
         LambdaQueryWrapper<ProductionOrder> queryWrapper = new LambdaQueryWrapper<>();
@@ -48,6 +50,7 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
      * @return
      */
     @Override
+    @RequirePermission(value = "order:production:detail", message = "您没有权限查询生产订单详情")
     public ProductionOrder selectProductionOrderDetail(String orderId) {
 
         ProductionOrder productionOrder = productionOrderMapper.selectById(orderId);
@@ -58,8 +61,13 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
 
         return productionOrder;
     }
-
+    /**
+     * 查询生产订单状态变更日志
+     * @param orderId
+     * @return
+     */
     @Override
+    @RequirePermission(value = "order:production:log", message = "您没有权限查询生产订单状态变更日志")
     public List<ProductionOrderStatusLog> selectOrderStausLog(@NotBlank String orderId) {
 
         LambdaQueryWrapper<ProductionOrderStatusLog> queryWrapper = new LambdaQueryWrapper<>();
