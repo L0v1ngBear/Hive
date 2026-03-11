@@ -12,19 +12,17 @@ import my.hive_back.module.order.model.dto.SalesOrderStatusRequest;
 import my.hive_back.module.order.model.entity.SalesOrder;
 import my.hive_back.module.order.model.dto.SalesOrderListRequest;
 import my.hive_back.module.order.model.vo.SalesOrderVO;
-import my.hive_back.module.order.service.impl.SalesOrderServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-public class SalesOrderService implements SalesOrderServiceImpl {
+public class SalesOrderService{
 
     @Resource
     private SalesOrderMapper salesOrderMapper;
 
-    @Override
     @RequirePermission(value = "order:sales:list", message = "您没有权限查询销售订单列表")
     public Page<SalesOrder> selectSalesOrder(SalesOrderListRequest request) {
 
@@ -39,7 +37,6 @@ public class SalesOrderService implements SalesOrderServiceImpl {
         return salesOrderMapper.selectPage(new Page<>(request.getPageNum(), request.getPageSize()), queryWrapper);
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
     @RequirePermission(value = "order:sales:update", message = "您没有权限更新销售订单状态")
     public SalesOrderVO updateOrderStatus(String orderId, SalesOrderStatusRequest request) {
@@ -93,7 +90,6 @@ public class SalesOrderService implements SalesOrderServiceImpl {
         return vo;
     }
 
-    @Override
     @RequirePermission(value = "order:sales:detail", message = "您没有权限查询销售订单详情")
     public SalesOrder getByIdandTenantId(String orderId) {
         return salesOrderMapper.selectByOrderId(orderId);

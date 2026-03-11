@@ -12,15 +12,13 @@ import my.hive_back.module.order.mapper.ProductionOrderStatusLogMapper;
 import my.hive_back.module.order.model.dto.ProductionOrderListRequest;
 import my.hive_back.module.order.model.entity.ProductionOrder;
 import my.hive_back.module.order.model.entity.ProductionOrderStatusLog;
-import my.hive_back.module.order.model.vo.ProductionOrderVO;
-import my.hive_back.module.order.service.impl.ProductionOrderServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class ProductionOrderService implements ProductionOrderServiceImpl {
+public class ProductionOrderService {
 
     @Resource
     private ProductionOrderMapper productionOrderMapper;
@@ -33,7 +31,6 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
      * @param request
      * @return
      */
-    @Override
     @RequirePermission(value = "order:production:list", message = "您没有权限查询生产订单列表")
     public Page<ProductionOrder> selectProductionOrder(ProductionOrderListRequest request) {
 
@@ -52,7 +49,6 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
      * @param orderId
      * @return
      */
-    @Override
     @RequirePermission(value = "order:production:detail", message = "您没有权限查询生产订单详情")
     public ProductionOrder selectProductionOrderDetail(String orderId) {
 
@@ -69,7 +65,6 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
      * @param orderId
      * @return
      */
-    @Override
     @RequirePermission(value = "order:production:log", message = "您没有权限查询生产订单状态变更日志")
     public List<ProductionOrderStatusLog> selectOrderStausLog(@NotBlank String orderId) {
 
@@ -79,7 +74,6 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
         return statusLogMapper.selectList(queryWrapper);
     }
 
-    @Override
     @RequirePermission(value = "order:production:process", message = "您没有权限处理生产订单")
     @Transactional(rollbackFor = Exception.class)
     public ProductionOrder processProductionOrder(String orderId, Integer process) {

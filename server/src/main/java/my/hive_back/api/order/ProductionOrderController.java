@@ -85,6 +85,7 @@ public class ProductionOrderController {
         return ResultDTO.success(logVOList);
     }
 
+    // 生产工序更新
     @PostMapping("/orders/process/{orderId}")
     public ResultDTO<ProductionOrderVO> processProductionOrder(
             @NotBlank @PathVariable String orderId,
@@ -94,4 +95,6 @@ public class ProductionOrderController {
         BeanUtils.copyProperties(order, vo);
         return ResultDTO.success(vo);
     }
+
+    //TODO 更新订单状态
 }
