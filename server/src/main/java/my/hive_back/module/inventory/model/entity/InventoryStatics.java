@@ -3,6 +3,7 @@ package my.hive_back.module.inventory.model.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @TableName("inventory_statics")

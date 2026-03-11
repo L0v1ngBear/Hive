@@ -5,10 +5,9 @@ import my.hive_back.common.dto.ResultDTO;
 import my.hive_back.module.inventory.model.entity.InventoryStatics;
 import my.hive_back.module.inventory.model.vo.InventoryOverViewVO;
 import my.hive_back.module.inventory.service.InventoryService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/inventory")
@@ -21,6 +20,21 @@ public class InventoryController {
     @GetMapping("/list")
     public ResultDTO<InventoryOverViewVO> listInventory() {
         InventoryStatics inventoryStatics = inventoryService.selectInventoryStatics();
+        if (inventoryStatics == null) {
+            return ResultDTO.success(new InventoryOverViewVO());
+        }
+        InventoryOverViewVO vo = new InventoryOverViewVO();
+        BeanUtils.copyProperties(inventoryStatics, vo);
+        return ResultDTO.success(vo);
+
+    }
+
+    @PostMapping("/cloth/in")
+    public ResultDTO<Void> inCloth(@RequestBody String barCode) {
+
+        //TODO 校验barCode是否合法
+        if (!barCode.matches("^[0-9]{13}$")) {
+        }
 
     }
 }

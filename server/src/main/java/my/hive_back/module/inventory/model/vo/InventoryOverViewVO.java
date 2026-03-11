@@ -13,4 +13,10 @@ public class InventoryOverViewVO {
 
     private Float totalOutMeters;
 
+    public InventoryOverViewVO() {
+        this.totalRollCount = 0L;
+        this.totalMeters = 0F;
+        this.totalInMeters = 0F;
+        this.totalOutMeters = 0F;
+    }
 }
