@@ -18,9 +18,9 @@ public class User {
     private Long id;
 
     /**
-     * 租户ID (用于多租户数据隔离)
+     * 租户编码 (用于多租户数据隔离)
      */
-    private Long tenantId;
+    private String tenantCode;
 
     /**
      * 姓名

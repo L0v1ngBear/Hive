@@ -1,17 +1,17 @@
 package my.hive_back.common.context;
 
 public class TenantContextHolder {
-    private static final ThreadLocal<Long> TENANT_ID = new ThreadLocal<>();
+    private static final ThreadLocal<String> TENANT_CODE = new ThreadLocal<>();
 
-    public static void setTenantId(Long tenantId) {
-        TENANT_ID.set(tenantId);
+    public static void setTenantCode(String tenantCode) {
+        TENANT_CODE.set(tenantCode);
     }
 
-    public static Long getTenantId() {
-        return TENANT_ID.get();
+    public static String getTenantCode() {
+        return TENANT_CODE.get();
     }
 
     public static void clear() {
-        TENANT_ID.remove();
+        TENANT_CODE.remove();
     }
 }

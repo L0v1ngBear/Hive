@@ -19,8 +19,8 @@ public class ProductionOrder {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    @TableField("tenant_id")
-    private Long tenantId;
+    @TableField("tenant_code")
+    private String tenantCode;
 
     /**
      * 生产订单编号（如TZ20260212001）

@@ -1,6 +1,7 @@
 package my.hive_back.module.order.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -17,7 +18,8 @@ public class SalesOrder {
     @TableId(type = IdType.INPUT) // 订单号手动生成，不使用自增
     private String orderId;
 
-    private Long tenantId;
+    @TableField("tenant_code")
+    private String tenantCode;
 
     /**
      * 订单状态

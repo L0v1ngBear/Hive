@@ -24,7 +24,7 @@ public class ProductionOrderVO {
      */
     private String status;
 
-    /**
+    /** 
      * 面料型号（如T800-210）
      */
     private String model;

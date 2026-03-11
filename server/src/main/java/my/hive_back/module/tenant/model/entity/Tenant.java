@@ -10,11 +10,9 @@ import java.time.LocalDateTime;
  * 对应数据库表：tenant
  * 功能说明：存储租户（客户/商户）的基础信息，用于多租户系统的租户管理
  *
- * @author （可补充作者名）
- * @date 2026-03-04
  */
 @TableName("tenant") // 关联数据库表名：tenant
-@Data // Lombok注解，自动生成getter/setter/toString/equals/hashCode等方法
+@Data
 public class Tenant {
 
     /**

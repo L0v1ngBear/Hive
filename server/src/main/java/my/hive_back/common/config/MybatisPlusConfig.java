@@ -24,15 +24,15 @@ public class MybatisPlusConfig {
         interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new TenantLineHandler() {
             @Override
             public Expression getTenantId() {
-                Long tenantId = TenantContextHolder.getTenantId();
-                if (tenantId == null) {
+                String tenantCode = TenantContextHolder.getTenantCode();
+                if (tenantCode == null) {
                     return new NullValue();
                 }
-                return new LongValue(tenantId);
+                return new LongValue(tenantCode);
             }
             @Override
             public String getTenantIdColumn() {
-                return "tenant_id";
+                return "tenant_code";
             }
         }));
 

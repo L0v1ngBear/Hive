@@ -24,31 +24,24 @@ public class TenantInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String tenantIdStr = request.getHeader("Tenant-id");
+        String tenantCodeStr = request.getHeader("Tenant-Code");
 
         // 1. 租户ID为空：返回HTTP 400 + 业务400
-        if (StringUtils.isBlank(tenantIdStr)) {
+        if (StringUtils.isBlank(tenantCodeStr)) {
             writeErrorResponse(response, HttpStatus.BAD_REQUEST, 400, "无权限");
             return false;
         }
 
-        // 2. 租户ID格式错误：返回HTTP 400 + 业务400
-        Long tenantId;
-        try {
-            tenantId = Long.parseLong(tenantIdStr.trim());
-        } catch (NumberFormatException e) {
-            writeErrorResponse(response, HttpStatus.BAD_REQUEST, 400, "租户ID格式错误");
-            return false;
-        }
+        // TODO 租户id格式校验
 
         // 3. 租户不存在：返回HTTP 403（禁止访问） + 业务403（更精准）
-        Tenant tenant = tenantMapper.selectById(tenantId);
+        Tenant tenant = tenantMapper.selectById(tenantCodeStr);
         if (tenant == null) {
             writeErrorResponse(response, HttpStatus.FORBIDDEN, 403, "无权限访问");
             return false;
         }
 
-        TenantContextHolder.setTenantId(tenantId);
+        TenantContextHolder.setTenantCode(tenantCodeStr);
         return true;
     }
 
