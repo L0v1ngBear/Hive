@@ -118,4 +118,11 @@ public class GlobalExceptionHandler {
         ResultDTO<Void> result = ResultDTO.fail(500, "服务器内部错误，请稍后重试");
         return new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    // 处理无权限异常
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ResultDTO<Void>> handleAccessDenied(AccessDeniedException e) {
+        ResultDTO<Void> result = ResultDTO.fail(403, "无权限");
+        return new ResponseEntity<>(result, HttpStatus.FORBIDDEN);
+    }
 }

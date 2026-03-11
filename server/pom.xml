@@ -16,7 +16,6 @@
 	<name>Hive_Back</name>
 	<description>Hive_Back</description>
 	<packaging>jar</packaging> <!-- 单体阶段仍为jar，微服务父工程改为pom -->
-
 	<properties>
 		<java.version>21</java.version>
 		<!-- 显式声明核心依赖版本（便于后续微服务统一管理） -->
@@ -24,6 +23,7 @@
 		<lombok.version>1.18.30</lombok.version>
 		<!-- 新增：MyBatis-Plus版本（适配Spring Boot 3.2.5） -->
 		<mybatis-plus.version>3.5.5</mybatis-plus.version>
+		<security.version>5.7.8</security.version>
 	</properties>
 
 	<!-- 核心：dependencyManagement 统一管理版本，不实际引入依赖 -->
@@ -35,6 +35,12 @@
 				<artifactId>spring-boot-starter</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-aop</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web</artifactId>
@@ -76,7 +82,7 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<!-- 实际引入依赖（无需写version，自动从dependencyManagement继承） -->
+	<!-- 实际引入依赖-->
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -86,10 +92,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<!-- 核心修复：显式引入validation依赖（jakarta.validation的核心） -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.mysql</groupId>
@@ -105,6 +115,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 
 		<!-- MyBatis-Plus依赖 -->
