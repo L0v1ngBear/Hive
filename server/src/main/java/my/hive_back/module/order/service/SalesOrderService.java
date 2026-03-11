@@ -96,6 +96,6 @@ public class SalesOrderService implements SalesOrderServiceImpl {
     @Override
     @RequirePermission(value = "order:sales:detail", message = "您没有权限查询销售订单详情")
     public SalesOrder getByIdandTenantId(String orderId) {
-        return salesOrderMapper.selectById(orderId);
+        return salesOrderMapper.selectByOrderId(orderId);
     }
 }

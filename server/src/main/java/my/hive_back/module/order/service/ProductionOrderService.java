@@ -6,13 +6,16 @@ import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotBlank;
 import my.hive_back.common.annotation.RequirePermission;
 import my.hive_back.common.exception.BusinessException;
+import my.hive_back.module.order.ProcessEnum;
 import my.hive_back.module.order.mapper.ProductionOrderMapper;
 import my.hive_back.module.order.mapper.ProductionOrderStatusLogMapper;
 import my.hive_back.module.order.model.dto.ProductionOrderListRequest;
 import my.hive_back.module.order.model.entity.ProductionOrder;
 import my.hive_back.module.order.model.entity.ProductionOrderStatusLog;
+import my.hive_back.module.order.model.vo.ProductionOrderVO;
 import my.hive_back.module.order.service.impl.ProductionOrderServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -53,7 +56,7 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
     @RequirePermission(value = "order:production:detail", message = "您没有权限查询生产订单详情")
     public ProductionOrder selectProductionOrderDetail(String orderId) {
 
-        ProductionOrder productionOrder = productionOrderMapper.selectById(orderId);
+        ProductionOrder productionOrder = productionOrderMapper.selectByOrderId(orderId);
 
         if (productionOrder == null) {
             throw new BusinessException(400, "订单不存在");
@@ -74,5 +77,34 @@ public class ProductionOrderService implements ProductionOrderServiceImpl {
         queryWrapper.eq(ProductionOrderStatusLog::getOrderId, orderId);
         queryWrapper.orderByAsc(ProductionOrderStatusLog::getCreateTime);
         return statusLogMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    @RequirePermission(value = "order:production:process", message = "您没有权限处理生产订单")
+    @Transactional(rollbackFor = Exception.class)
+    public ProductionOrder processProductionOrder(String orderId, Integer process) {
+
+        if (ProcessEnum.getByCode(process) == null) {
+            throw new BusinessException(400, "无效的生产工序编码");
+        }
+
+        // for update 悲观锁，确保在更新状态时不会被其他事务修改
+        ProductionOrder productionOrder = productionOrderMapper.selectByOrderId(orderId);
+
+        if (productionOrder == null) {
+            throw new BusinessException(400, "订单不存在");
+        }
+
+        productionOrder.setProcess(process);
+        productionOrderMapper.updateById(productionOrder);
+
+        ProductionOrderStatusLog statusLog = new ProductionOrderStatusLog();
+        statusLog.setOrderId(orderId);
+        statusLog.setOldStatus(productionOrder.getStatus());
+        statusLog.setNewStatus(ProcessEnum.getByCode(process).getName());
+
+        statusLogMapper.insert(statusLog);
+
+        return productionOrder;
     }
 }

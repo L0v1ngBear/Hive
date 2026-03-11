@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import my.hive_back.module.order.model.dto.ProductionOrderListRequest;
 import my.hive_back.module.order.model.entity.ProductionOrder;
 import my.hive_back.module.order.model.entity.ProductionOrderStatusLog;
+import my.hive_back.module.order.model.vo.ProductionOrderVO;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface ProductionOrderServiceImpl {
     ProductionOrder selectProductionOrderDetail(String orderId);
 
     List<ProductionOrderStatusLog> selectOrderStausLog(@NotBlank String orderId);
+
+    ProductionOrder processProductionOrder(@NotBlank String orderId, Integer process);
 }

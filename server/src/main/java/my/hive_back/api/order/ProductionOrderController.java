@@ -84,4 +84,14 @@ public class ProductionOrderController {
 
         return ResultDTO.success(logVOList);
     }
+
+    @PostMapping("/orders/process/{orderId}")
+    public ResultDTO<ProductionOrderVO> processProductionOrder(
+            @NotBlank @PathVariable String orderId,
+            @NotBlank @RequestBody Integer process) {
+        ProductionOrder order = productionOrderService.processProductionOrder(orderId, process);
+        ProductionOrderVO vo = new ProductionOrderVO();
+        BeanUtils.copyProperties(order, vo);
+        return ResultDTO.success(vo);
+    }
 }

@@ -64,7 +64,7 @@ public class TenantInterceptor implements HandlerInterceptor {
         }
 
         // 5. 校验租户是否存在（保留你原有逻辑）
-        Tenant tenant = tenantMapper.selectById(tenantCode);
+        Tenant tenant = tenantMapper.selectByTenantCode(tenantCode);
         if (tenant == null) {
             writeErrorResponse(response, HttpStatus.FORBIDDEN, 403, "无权限访问：租户不存在");
             return false;
