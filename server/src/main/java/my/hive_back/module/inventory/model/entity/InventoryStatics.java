@@ -3,9 +3,13 @@ package my.hive_back.module.inventory.model.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * 库存统计实体类
+ * 数据来源于每日统计
+ * 对应数据库表：inventory_statics
+ */
 @TableName("inventory_statics")
 @Data
 public class InventoryStatics {
@@ -23,7 +27,7 @@ public class InventoryStatics {
     private LocalDateTime statDate;
 
     /**
-     * 总滚动次数
+     * 总卷数
      * 对应数据库字段：total_roll_count
      */
     @TableField("total_roll_count")
@@ -37,18 +41,18 @@ public class InventoryStatics {
     private Float totalMeters;
 
     /**
-     * 总入米数
-     * 对应数据库字段：total_in_meters
+     * 日入米数
+     * 对应数据库字段：day_in_meters
      */
-    @TableField("total_in_meters")
-    private Float totalInMeters;
+    @TableField("day_in_meters")
+    private Float dayInMeters;
 
     /**
-     * 总出米数
-     * 对应数据库字段：total_out_meters
+     * 日出米数
+     * 对应数据库字段：day_out_meters
      */
-    @TableField("total_out_meters")
-    private Float totalOutMeters;
+    @TableField("day_out_meters")
+    private Float dayOutMeters;
 
     /**
      * 创建时间（自动填充）

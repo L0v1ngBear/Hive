@@ -1,7 +1,9 @@
 package my.hive_back.api.inventory;
 
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import my.hive_back.common.dto.ResultDTO;
+import my.hive_back.module.inventory.model.dto.InventoryInRequest;
 import my.hive_back.module.inventory.model.entity.InventoryStatics;
 import my.hive_back.module.inventory.model.vo.InventoryOverViewVO;
 import my.hive_back.module.inventory.service.InventoryService;
@@ -30,11 +32,9 @@ public class InventoryController {
     }
 
     @PostMapping("/cloth/in")
-    public ResultDTO<Void> inCloth(@RequestBody String barCode) {
+    public ResultDTO<Void> inCloth(@Valid @RequestBody InventoryInRequest inventoryInRequest) {
 
-        //TODO 校验barCode是否合法
-        if (!barCode.matches("^[0-9]{13}$")) {
-        }
+        inventoryService.inCloth(inventoryInRequest);
 
     }
 }
