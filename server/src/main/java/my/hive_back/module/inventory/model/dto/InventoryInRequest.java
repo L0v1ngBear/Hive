@@ -10,7 +10,7 @@ public class InventoryInRequest {
     private String barcode;
 
     @NotBlank
-    private String model;
+    private String modelCode;
 
     @NotBlank
     @Min(value = 1, message = "米数不能小于等于0")

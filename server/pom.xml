@@ -25,7 +25,7 @@
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <security.version>5.7.8</security.version>
         <com.google.zxing.version>3.5.2</com.google.zxing.version>
-
+        <jSerialComm.version>2.9.2</jSerialComm.version>
     </properties>
 
     <!-- 核心：dependencyManagement 统一管理版本，不实际引入依赖 -->
@@ -46,6 +46,11 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
             <!-- 新增：管控validation依赖版本（继承父工程3.2.5） -->
@@ -83,6 +88,14 @@
                 <version>${lombok.version}</version>
                 <optional>true</optional>
             </dependency>
+            <!-- Maven依赖 -->
+
+            <!-- Maven依赖 -->
+            <dependency>
+                <groupId>com.fazecast</groupId>
+                <artifactId>jSerialComm</artifactId>
+                <version>${jSerialComm.version}</version>
+            </dependency>
 
             <!-- MyBatis-Plus依赖版本管理 -->
             <dependency>
@@ -118,6 +131,10 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
@@ -145,6 +162,12 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Maven依赖 -->
+        <dependency>
+            <groupId>com.fazecast</groupId>
+            <artifactId>jSerialComm</artifactId>
         </dependency>
     </dependencies>
 

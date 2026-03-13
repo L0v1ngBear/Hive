@@ -56,20 +56,13 @@ public class Cloth extends BaseEntity {
     /**
      * 入库操作人ID（关联用户表）
      */
-    private String inOperatorId;
-
-    /**
-     * 入库操作人名称（冗余）
-     */
-    private String inOperatorName;
+    private Long inOperatorId;
 
     /**
      * 出库操作人ID（关联用户表）
      */
-    private String outOperatorId;
+    private Long outOperatorId;
 
-    /**
-     * 出库操作人名称（冗余）
-     */
-    private String outOperatorName;
+
+    private String inType;
 }

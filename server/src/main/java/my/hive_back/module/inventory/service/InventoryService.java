@@ -3,13 +3,21 @@ package my.hive_back.module.inventory.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import lombok.Synchronized;
+import my.hive_back.common.context.TenantPermissionContext;
+import my.hive_back.common.interceptor.TenantInterceptor;
+import my.hive_back.common.utils.BarCodeUtil;
 import my.hive_back.module.inventory.InventoryInTypeEnum;
 import my.hive_back.module.inventory.InventoryOperateTypeEnum;
+import my.hive_back.module.inventory.mapper.ClothMapper;
 import my.hive_back.module.inventory.mapper.InventoryRecordMapper;
 import my.hive_back.module.inventory.model.dto.InventoryInRequest;
+import my.hive_back.module.inventory.model.entity.Cloth;
 import my.hive_back.module.inventory.model.entity.InventoryRecord;
 import my.hive_back.module.inventory.model.entity.InventoryStatics;
 import my.hive_back.module.inventory.mapper.InventoryStaticsMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +34,12 @@ public class InventoryService {
 
     @Resource
     private InventoryRecordMapper inventoryRecordMapper;
+
+    @Resource
+    private BarCodeUtil barCodeUtil;
+
+    @Resource
+    private ClothMapper clothMapper;
 
     public InventoryStatics selectInventoryStatics() {
 
@@ -47,6 +61,7 @@ public class InventoryService {
      *
      * @param inventoryInRequest 入库请求
      */
+    @Synchronized
     @Transactional(rollbackFor = Exception.class)
     public void inCloth(@Valid InventoryInRequest inventoryInRequest) {
 
@@ -73,7 +88,8 @@ public class InventoryService {
     }
 
     private void CompleteBarcode(InventoryInRequest request) {
-
+        String barCode = barCodeUtil.createBarCode(TenantPermissionContext.getTenantCode());
+        request.setBarcode(barCode);
     }
 
     private void InventoryAutoIn(@Valid InventoryInRequest inventoryInRequest) {
@@ -87,7 +103,17 @@ public class InventoryService {
 
     private void InventoryHandIn(InventoryInRequest inventoryInRequest) {
 
+        Cloth cloth = new Cloth();
+        BeanUtils.copyProperties(inventoryInRequest, cloth);
+        cloth.setInOperatorId(TenantPermissionContext.getUserId());
+        cloth.setInTime(LocalDateTime.now());
+        cloth.setTotalMeters(inventoryInRequest.getMeters());
+        cloth.setRemainingMeters(inventoryInRequest.getMeters());
+        cloth.setStatus(InventoryOperateTypeEnum.IN.getCode());
 
+        clothMapper.insert(cloth);
 
+        //TODO 打印条形码
+        barCodeUtil.createBarCodeImage(cloth.getBarcode(), 200, 100);
     }
 }
